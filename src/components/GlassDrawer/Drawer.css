@@ -1,0 +1,28 @@
+.drawer-content-container {
+  background: rgba(179, 179, 179, 0.18);
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 5.5px );
+  -webkit-backdrop-filter: blur( 5.5px );
+  border-radius: 10px 0 0 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+main {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+main::-webkit-scrollbar {
+  display: none;
+}
+
+article {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+article::-webkit-scrollbar {
+  display: none;
+}
