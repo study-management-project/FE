@@ -15,27 +15,27 @@ class Axios {
             withCredentials: true
         })
         // 인스턴스에 interceptors 설정
-        Axios.instance.interceptors.response.use((res) => {
-            return res;
-        }, async (error) => {
-            const status:number = parseInt(error.response.status);
-            const originalRequest:string = error.config;
-            // 토큰이 만료되었을 때 refresh
-            if (status === 441) {
-                const refRes:AxiosResponse = await Axios.instance.post(
-                    '/auth/refresh',
-                    {}
-                )
-                // 정상적으로 refresh 되면 원래 요청을 다시 보낸다.
-                if (refRes.status === 200) {
-                    return axios(originalRequest);
-                } else {
-                    return error;
-                }
-            } else {
-                return error;
-            }
-        })
+        // Axios.instance.interceptors.response.use((res) => {
+        //     return res;
+        // }, async (error) => {
+        //     const status:number = parseInt(error.response.status);
+        //     const originalRequest:string = error.config;
+        //     // 토큰이 만료되었을 때 refresh
+        //     if (status === 441) {
+        //         const refRes:AxiosResponse = await Axios.instance.post(
+        //             '/auth/refresh',
+        //             {}
+        //         )
+        //         // 정상적으로 refresh 되면 원래 요청을 다시 보낸다.
+        //         if (refRes.status === 200) {
+        //             return axios(originalRequest);
+        //         } else {
+        //             return error;
+        //         }
+        //     } else {
+        //         return error;
+        //     }
+        // })
         return Axios.instance;
     }
     
