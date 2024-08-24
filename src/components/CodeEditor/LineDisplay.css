@@ -1,3 +1,7 @@
 #line-container{
     max-height: calc(100dvh-3rem);
 }
+
+::-webkit-scrollbar{
+    display: none;
+}

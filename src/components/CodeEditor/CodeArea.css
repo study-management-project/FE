@@ -1,6 +1,6 @@
 @supports (not selector(::-webkit-scrollbar)) and (not selector(::-webkit-scrollbar-button)) and (not selector(::-webkit-scrollbar-thumb)) and (not selector(::-webkit-scrollbar-track)) {
     textarea {
-        scrollbar-width: thin;
+        scrollbar-width: none;
         scrollbar-color:  rgba( 255, 255, 255, 0.35 ) transparent;
     }
 }
@@ -13,7 +13,7 @@ textarea {
 
 
 textarea::-webkit-scrollbar{
-    display: block;
+    display: none;
     height: 3px;
     width : 3px;
 }
