@@ -5,8 +5,8 @@ import HighlightedCode from './HighlightCode';
 const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispatch<SetStateAction<string>>, height:number, setHeight:Dispatch<SetStateAction<number>>}):JSX.Element => {
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const lineHeight:number = 24;
-
   const highlightedCodeRef = useRef<HTMLDivElement | null>(null);
+
   // 높이 조정
   const adjustHeight = () => {
     if (textarea.current) {
@@ -18,12 +18,6 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
     }
   }
 
-  const focusTextarea = () => {
-    if (textarea.current) {
-      textarea.current.focus();
-    }
-  }
-
   // 스크롤 동기화 함수
   const syncHighlightedCodeScroll = () => {
     if (highlightedCodeRef.current && textarea.current) {
@@ -32,8 +26,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
     }
   }
 
-  // 이벤트 등록
-
+  // 스크롤 동기화 이벤트 등록
   useEffect(() => {
     if (textarea.current) {
       textarea.current.addEventListener('scroll', syncHighlightedCodeScroll);
@@ -51,7 +44,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
     <>
       <textarea 
       className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-8 font-light'
-      style={{height:`${height*1.5}rem`}}
+      style={{height:`${height*1.5}rem`, caretColor: 'white'}}
       wrap='off'
       onInput={adjustHeight}
       onChange={e => setCode(e.target.value)}
@@ -62,7 +55,6 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
       <div 
       className='highlighted-code' 
       ref={highlightedCodeRef}
-      onClick={focusTextarea}
       >
         <HighlightedCode code={code}/>
       </div>
