@@ -12,7 +12,7 @@ const CodeEditor = () => {
   return (
     <div className='flex relative'>
       <LineDisplay textareaHeight={textareaHeight} />
-      <CodeArea setCode={setCode} height={textareaHeight} setHeight={setHeight}/>
+      <CodeArea code={code} setCode={setCode} height={textareaHeight} setHeight={setHeight}/>
     </div>
   )
 }
