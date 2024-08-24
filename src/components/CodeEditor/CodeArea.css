@@ -4,6 +4,7 @@
         scrollbar-color:  rgba( 255, 255, 255, 0.35 ) transparent;
     }
 }
+
 textarea {
     width: calc(100% - 2rem);
     max-height: calc(100%-3rem);

@@ -44,7 +44,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
     <>
       <textarea 
       className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-8 font-light'
-      style={{height:`${height*1.5}rem`, caretColor: 'white'}}
+      style={{height:`${height*1.55}rem`, caretColor: 'white'}}
       wrap='off'
       onInput={adjustHeight}
       onChange={e => setCode(e.target.value)}
