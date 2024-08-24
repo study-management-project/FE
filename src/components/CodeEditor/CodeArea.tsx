@@ -1,20 +1,34 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useRef } from 'react'
+import './CodeArea.css'
 
-const CodeArea = ({height, setHeight}:{height:number, setHeight:Dispatch<SetStateAction<number>>}) => {
+const CodeArea = ({setCode, height, setHeight}:{setCode:Dispatch<SetStateAction<string>>, height:number, setHeight:Dispatch<SetStateAction<number>>}):JSX.Element => {
+  const textarea = useRef<HTMLTextAreaElement | null>(null);
+  const lineHeight:number = 24;
 
+  // 내용 업데이트
+  const updateCode = (event:React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCode(event.target.value);
+  }
 
-  const onKeyDown = (event:React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      console.log("Enter")
-      setHeight(height+1);
+  // 높이 조정
+  const adjustHeight = () => {
+    if (textarea.current) {
+      textarea.current.style.height = `${24}px`;
+      const newHeight:number = Math.max(Math.floor(textarea.current.scrollHeight / lineHeight), 1);
+
+      setHeight(newHeight);
+      textarea.current.style.height = `${newHeight * 1.5}rem`;
     }
   }
 
   return (
     <textarea 
-    className='w-full resize-none border-none focus:border-none outline-none absolute p-0 max-h-dvh'
+    className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-white ml-8'
     style={{height:`${height*1.5}rem`}}
-    onKeyDown={onKeyDown}
+    wrap='off'
+    onChange={updateCode}
+    onInput={adjustHeight}
+    ref={textarea}
     >
 
     </textarea>

@@ -40,9 +40,9 @@ const RoomPage = () => {
   },[comments])
 
   return (
-    <div className='bg-[#212121] w-full h-full'>
+    <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
       <RoomHeader isOpen={open} setOpen={setOpen}/>
-      <div className='relative h-full'>
+      <div className='relative min-h-lvh'>
         <CodeEditor />
         <Drawer title={drawerTitle} children={draerChildren} isOpen={open} setOpen={setOpen}></Drawer>
       </div>

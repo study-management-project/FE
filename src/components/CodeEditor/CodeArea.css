@@ -1,0 +1,29 @@
+textarea {
+    width: calc(100% - 2rem);
+    max-height: calc(100%-3rem);
+}
+
+@supports (not selector(::-webkit-scrollbar)) and (not selector(::-webkit-scrollbar-button)) and (not selector(::-webkit-scrollbar-thumb)) and (not selector(::-webkit-scrollbar-track)) {
+    textarea {
+        scrollbar-width: thin;
+        scrollbar-color:  rgba( 255, 255, 255, 0.35 ) transparent;
+    }
+}
+
+textarea::-webkit-scrollbar{
+    display: block;
+    height: 3px;
+    width : 3px;
+}
+
+textarea::-webkit-scrollbar-button{
+    display: none;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.719);
+}
+
+textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
