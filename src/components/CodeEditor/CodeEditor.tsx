@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import LineDisplay from './LineDisplay'
 import CodeArea from './CodeArea';
 
-const CodeEditor = () => {
+const CodeEditor = ({code, setCode}:{code:string, setCode:Dispatch<SetStateAction<string>>}) => {
   // textarea 내용
-  const [code, setCode] = useState<string>(""); 
 
   // textarea 높이
   const [textareaHeight, setHeight] = useState<number>(1);

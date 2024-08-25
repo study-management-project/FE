@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import './CodeArea.css'
 import HighlightedCode from './HighlightCode';
 
@@ -8,7 +8,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
   const highlightedCodeRef = useRef<HTMLDivElement | null>(null);
 
   // 높이 조정
-  const adjustHeight = () => {
+  const adjustHeight = ():void => {
     if (textarea.current) {
       textarea.current.style.height = `${24}px`;
       const newHeight:number = Math.max(Math.floor(textarea.current.scrollHeight / lineHeight), 1);
@@ -19,7 +19,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
   }
 
   // 스크롤 동기화 함수
-  const syncHighlightedCodeScroll = () => {
+  const syncHighlightedCodeScroll = ():void => {
     if (highlightedCodeRef.current && textarea.current) {
       highlightedCodeRef.current.scrollLeft = textarea.current.scrollLeft;
       highlightedCodeRef.current.scrollTop = textarea.current.scrollTop;
@@ -49,6 +49,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
       onInput={adjustHeight}
       onChange={e => setCode(e.target.value)}
       ref={textarea}
+      spellCheck='false'
       >
 
       </textarea>
