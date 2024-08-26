@@ -15,9 +15,13 @@ import axi from '../../utils/axios/Axios';
 const RoomPage = () => {
   const [isMounted,setMounted] = useState<boolean>(false);
 
+  // 내가 받은 것인지, 남에게서 받은 것인지 판별
+  const [isReceived, setIsReceived] = useState<boolean>(false);
   // 파라미터
   const params:Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();;
-  //날짜
+  // 디바운싱 timer
+  const timer:React.MutableRefObject<ReturnType<typeof setTimeout>|undefined> = useRef(undefined);
+  // 날짜
   const todayDate = useRef<Date>(new Date());
   const year:number = todayDate.current.getFullYear();
   const month:number = todayDate.current.getMonth()+1;
@@ -48,17 +52,18 @@ const RoomPage = () => {
 
   // received Code도 useState로 관리해볼까?
   const updateCode = (receivedCode:string) => {
-    console.log('받은 코드는');
-    console.log(receivedCode);
-    console.log('현재 코드는');
-    console.log(code);
-    if (receivedCode == code) {
-      console.log("같아서 아무 것도 안 함");
-    }
-    else {
-      console.log('코드 업데이트 할 거임!');
-      setCode(code);
-    }
+    setCode((prevCode) => {
+      if (receivedCode == prevCode) {
+        return prevCode
+      }
+      else {
+
+        return receivedCode;
+      }
+    });
+    setTimeout(() => {
+      setIsReceived(false);
+    },0);
   }
   // const addComment = (comment:Comment):void => {
   //   setComments([...comments,comment])
@@ -132,8 +137,24 @@ const RoomPage = () => {
       setMounted(!isMounted);
     }
     else {
-      sock.current.sendCode(code);
-    }
+      console.log(timer.current);
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+      else {
+          timer.current = setTimeout(() => {
+            if (!isReceived) {
+              sock.current.sendCode(code);
+            }
+            else {
+              setIsReceived(false);
+            }
+          },500)
+          setTimeout(() => {
+            timer.current = undefined;
+          },0)
+        } 
+      }
   },[code])
 
   return (

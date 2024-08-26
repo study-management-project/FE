@@ -17,8 +17,6 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
     }
   }
 
-  
-
   // 스크롤 동기화 함수
   const syncHighlightedCodeScroll = ():void => {
     if (highlightedCodeRef.current && textarea.current) {
@@ -26,6 +24,13 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
       highlightedCodeRef.current.scrollTop = textarea.current.scrollTop;
     }
   }
+
+  useEffect(() => {
+    if (textarea.current) {
+      textarea.current.value = code;
+      adjustHeight();
+    }
+  },[code])
 
   // 스크롤 동기화 이벤트 등록
   useEffect(() => {

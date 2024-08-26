@@ -8,7 +8,6 @@ import { Dispatch, SetStateAction } from "react";
 export class Sock {
     private client: CompatClient | undefined;
     private roomId: string | undefined;
-    private timer: NodeJS.Timeout | undefined;
     private subscriptions: StompSubscription[] = [];
     private instance: any;
 
@@ -31,7 +30,6 @@ export class Sock {
             this.client.connect({}, () => {
                 resolve();
             }, (error: any) => {
-                console.log("연결 실패");
                 reject(error);
             });
         });
@@ -55,8 +53,6 @@ export class Sock {
                 const subscription: StompSubscription = this.client.subscribe(
                     "/topic/" + this.roomId + "/" + topic,
                         (message:IMessage) => {
-                            console.log('받은 코드: ');
-                            console.log(message.body);
                             action(message.body);
                         }
 
@@ -76,18 +72,11 @@ export class Sock {
 
     // 코드 공유
     public sendCode(code: string) {
-        if (this.timer) {
-            clearTimeout(this.timer);
-            return
-        }
-        console.log('보냄');
-        this.timer = setTimeout(() => {
             this.client?.send(
                 "/share-code",
                 {},
                 JSON.stringify({ uuid: this.roomId, content: code })
             )
-        }, 500);
     }
 
     // 코멘트 등록
