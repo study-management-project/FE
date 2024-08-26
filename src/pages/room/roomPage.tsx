@@ -7,31 +7,59 @@ import { Comment } from '../../model/Comment';
 import Drawer from '../../components/GlassDrawer/Drawer';
 import RoomHeader from '../../components/RoomHeader';
 import CodeEditor from '../../components/CodeEditor/CodeEditor';
-import sock, { Sock } from '../../utils/socket/Socket';
+import { Sock } from '../../utils/socket/Socket';
 import { RoomInfo } from '../../model/RoomInfo';
 import { AxiosResponse } from 'axios';
 import axi from '../../utils/axios/Axios';
 
 const RoomPage = () => {
+  const [isMounted,setMounted] = useState<boolean>(false);
+
   // 파라미터
   const params:Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();;
+  //날짜
+  const todayDate = useRef<Date>(new Date());
+  const year:number = todayDate.current.getFullYear();
+  const month:number = todayDate.current.getMonth()+1;
+  const commentPage = useRef<number>(0);
   // 방 정보
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("","","","",[],[],[]));
   // 코드
   const [code, setCode] = useState<string>(""); 
   // 스냅샷들 (년:월:일:[])
-  const [snapshots, setSnapshots] = useState<Map<number,Map<number,Map<number,CodeSnapshot[]>>>>();
+  const initialSnapshots: Map<number, Map<number, Map<number, any>>> = new Map([
+    [
+      year,
+      new Map([
+        [month, new Map<number, any>()],
+      ]),
+    ],
+  ]);
+  const [snapshots, setSnapshots] = useState<Map<number, Map<number, Map<number, any>>>>(initialSnapshots);
   // 코멘트들
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const month = useRef<number>(new Date().getMonth());
-  const commentPage = useRef<number>(0);
+  const sock = useRef<Sock>(Sock.createInstance());
+  
 
   const [open, setOpen] = useState<boolean>(false);
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
   const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<div>Hello</div>);
 
-
+  // received Code도 useState로 관리해볼까?
+  const updateCode = (receivedCode:string) => {
+    console.log('받은 코드는');
+    console.log(receivedCode);
+    console.log('현재 코드는');
+    console.log(code);
+    if (receivedCode == code) {
+      console.log("같아서 아무 것도 안 함");
+    }
+    else {
+      console.log('코드 업데이트 할 거임!');
+      setCode(code);
+    }
+  }
   // const addComment = (comment:Comment):void => {
   //   setComments([...comments,comment])
   // } 
@@ -42,13 +70,11 @@ const RoomPage = () => {
 
   // 페이지 로드 시 방 정보, 
   const pageOnload = async() => {
-    const response:AxiosResponse<any,any> = await axi.get(`room/${params.roomId}`);
+    const response:AxiosResponse = await axi.get(`room/${params.roomId}`);
     setRoomInfo(RoomInfo.fromJson(response.data));
-    await Sock.connect();
-    await Sock.joinRoom(params.roomId);
-    // Sock.subscribe('code'
-    //   , setCode;
-    // );
+    await sock.current.connect();
+    await sock.current.joinRoom(params.roomId);
+    sock.current.subscribe('code', updateCode);
     // Sock.subscribe('comment'
     //   , addComment
     // );
@@ -66,21 +92,49 @@ const RoomPage = () => {
     
     // 브라우저 종료 시 unsubscribe;
     window.addEventListener('beforeunload', () => {
-      Sock.unsubscribe();
+      sock.current.unsubscribe();
     })
 
     return () => {
-      Sock.unsubscribe();
+      sock.current.unsubscribe();
       window.removeEventListener('beforeunload', () => {
-        Sock.unsubscribe();
+        sock.current.unsubscribe();
       });
     }
 
   },[])
 
   useEffect(() => {
-    console.log(roomInfo);
-  },[roomInfo]);
+    const snapshotDates = roomInfo.getHaveSnapshotDate();
+  
+    snapshotDates.forEach((snapshotDate: any) => {
+      setSnapshots((prevData) => {
+        const yearMap:Map<number, Map<number, Map<number, any>>> = new Map(prevData); // Clone the outer map
+        const monthMap:Map<any, any> = new Map(yearMap.get(year) || new Map()); // Clone the inner month map
+        const dateMap:Map<unknown, unknown> = new Map(monthMap.get(month) || new Map()); // Clone the inner date map
+  
+        dateMap.set(snapshotDate, []);
+        monthMap.set(month, dateMap);
+        yearMap.set(year, monthMap);
+  
+        return yearMap;
+      });
+    });
+  }, [roomInfo]);
+
+  useEffect(() => {
+    console.log(snapshots);
+  },[snapshots])
+
+  // 코드 pub
+  useEffect(() => {
+    if (!isMounted) {
+      setMounted(!isMounted);
+    }
+    else {
+      sock.current.sendCode(code);
+    }
+  },[code])
 
   return (
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>

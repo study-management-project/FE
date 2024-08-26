@@ -34,6 +34,6 @@ export class RoomInfo {
     }
 
     public getHaveSnapshotDate() {
-        return this.getHaveSnapshotDate;
+        return this.haveSnapshotDate;
     }
 }

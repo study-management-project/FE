@@ -6,7 +6,6 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const lineHeight:number = 24;
   const highlightedCodeRef = useRef<HTMLDivElement | null>(null);
-
   // 높이 조정
   const adjustHeight = ():void => {
     if (textarea.current) {
@@ -17,6 +16,8 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
       textarea.current.style.height = `${newHeight * 1.5}rem`;
     }
   }
+
+  
 
   // 스크롤 동기화 함수
   const syncHighlightedCodeScroll = ():void => {
