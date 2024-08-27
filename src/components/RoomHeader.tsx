@@ -1,8 +1,6 @@
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, } from "react"
 
 const RoomHeader = ({ isOpen, setOpen }: { isOpen: boolean, setOpen: Dispatch<SetStateAction<boolean>> }) => {
-  // Code Snapshow과 Check up 중 어떤 내용을 표시할지 결정
-
   const handleCodeSnapshotClick = () => {
     setOpen(!isOpen);
   };
