@@ -24,8 +24,14 @@ export default function Register() {
             return;
         }
 
+        const data = {
+            username: getName,
+            password: getPwd,
+            email: getId
+        }
+
         try {
-            const response: AxiosResponse = await axi.post("/register");
+            const response: AxiosResponse = await axi.post("/register", JSON.stringify(data));
             console.log(response);
         } catch (error) {
             console.error("Registration failed:", error);
