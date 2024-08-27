@@ -1,7 +1,13 @@
+import Login from "../../components/User/Login";
+import LoginLayout from "../../layouts/LoginLayout";
+
 const MainPage = () => {
   return (
     <>
-     <h1>메인 페이지</h1> 
+    <LoginLayout>
+     <Login>
+     </Login>
+    </LoginLayout>
     </>
   )
 }
