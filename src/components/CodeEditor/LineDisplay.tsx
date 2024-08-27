@@ -15,7 +15,7 @@ const LineDisplay = ({textareaHeight}:{textareaHeight:number}):JSX.Element => {
 
   return (
     <div 
-    className='line-container w-8 overflow-y-scroll'
+    className='line-container w-10 overflow-y-scroll'
     style={{
       height:`${textareaHeight*1.5}rem`
     }}

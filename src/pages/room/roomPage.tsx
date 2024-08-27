@@ -78,9 +78,8 @@ const RoomPage = () => {
   const pageOnload = async() => {
     const response:AxiosResponse = await axi.get(`room/${params.roomId}`);
     setRoomInfo(RoomInfo.fromJson(response.data));
-    await sock.current.connect();
+    sock.current.connect(['code'],[updateCode]);
     await sock.current.joinRoom(params.roomId);
-    sock.current.subscribe('code', updateCode);
     // Sock.subscribe('comment'
     //   , addComment
     // );
@@ -164,9 +163,9 @@ useEffect(() => {
     clearTimeout(timer.current);
   }
   
-  timer.current = setTimeout(async () => {
+  timer.current = setTimeout(() => {
     // 코드가 변경된 후에만 송신
-    await sock.current.sendCode(code);
+    sock.current.sendCode(code);
 
     // 송신 후 잠시 후에 isReceived를 false로 리셋
     setTimeout(() => {
@@ -177,7 +176,7 @@ useEffect(() => {
   return () => {
     clearTimeout(timer.current); // cleanup 함수
   };
-}, [code]);
+  }, [code]);
 
 
   return (

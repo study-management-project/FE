@@ -24,16 +24,15 @@ export class Sock {
     }
 
     // 소켓 연결
-    public async connect(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.client = Stomp.over(this.instance);
-            this.client.connect({}, () => {
-                resolve();
-            }, (error: any) => {
-                reject(error);
-            });
+    public connect = (topics: string[], actions: Function[]):void => {
+        this.client = Stomp.over(new SockJS(import.meta.env.VITE_SERVER_URL + 'ws'));
+        this.client.connect({}, () => {
+            for (let i=0; i<topics.length; i++) {
+                this.subscribe(topics[i], actions[i]);
+            }
         });
     }
+
 
     // 방 접속
     public async joinRoom(roomId: string | undefined): Promise<void> {
@@ -47,16 +46,14 @@ export class Sock {
     }
 
     // 토픽 구독
-    public subscribe(topic: string, action: Dispatch<SetStateAction<any>>): void {
+    public subscribe(topic: string, action: Function): void {
         if (this.client) {
             if (this.client.connected) {
                 const subscription: StompSubscription = this.client.subscribe(
                     "/topic/" + this.roomId + "/" + topic,
-                        (message:IMessage) => {
-                            action(message.body);
-                        }
-
-                );
+                    (message:IMessage) => {
+                        action(message.body);
+                    });
                 this.subscriptions.push(subscription);
             }
         }
@@ -71,16 +68,12 @@ export class Sock {
     }
 
     // 코드 공유
-    public async sendCode(code: string):Promise<void> {
-        return new Promise((resolve, reject) => {
-            resolve(
-                this.client?.send(
-                    "/share-code",
-                    {},
-                    JSON.stringify({ uuid: this.roomId, content: code })
-                )
-            )
-        })
+    public sendCode(code: string):void {
+        this.client?.send(
+            "/share-code",
+            {},
+            JSON.stringify({ uuid: this.roomId, content: code })
+        )
     }
 
     // 코멘트 등록

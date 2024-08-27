@@ -41,7 +41,7 @@ textarea::-webkit-scrollbar-track {
     right: 0;
     bottom: 0;
     overflow: auto;
-    margin-left: 2rem;
+    margin-left: 3rem;
     color: white;
     background-color: transparent;
     z-index: 1;
