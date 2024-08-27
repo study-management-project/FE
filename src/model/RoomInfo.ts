@@ -26,14 +26,18 @@ export class RoomInfo {
             data.checkUpDTO.uuid,
             data.name,
             data.description,
-            data.contetn,
+            data.content,
             snapshotList,
             data.commentList,
             data.haveSnapshotDate
         )
     }
 
-    public getHaveSnapshotDate() {
+    public getHaveSnapshotDate():number[] {
         return this.haveSnapshotDate;
+    }
+
+    public getContent():string {
+        return this.content;
     }
 }

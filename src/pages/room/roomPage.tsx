@@ -13,8 +13,11 @@ import { AxiosResponse } from 'axios';
 import axi from '../../utils/axios/Axios';
 
 const RoomPage = () => {
+  // 마운트 시 useEffect 실행 방지
   const [isMounted,setMounted] = useState<boolean>(false);
-
+  const [roomMounted, setRoomMounted] = useState<boolean>(false);
+  // 처음 표시되어야할 코드를 표시할 때 메세지 송신 방지용 flag
+  const [isInitial, setInitial] =useState<boolean>(true); 
   // 내가 받은 것인지, 남에게서 받은 것인지 판별
   const [isReceived, setIsReceived] = useState<boolean>(false);
   // 파라미터
@@ -39,31 +42,29 @@ const RoomPage = () => {
       ]),
     ],
   ]);
+  // 스냅샷들
   const [snapshots, setSnapshots] = useState<Map<number, Map<number, Map<number, any>>>>(initialSnapshots);
   // 코멘트들
   const [comments, setComments] = useState<Comment[]>([]);
-
+  // 소켓 객체
   const sock = useRef<Sock>(Sock.createInstance());
   
-
+  // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
   const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<div>Hello</div>);
 
   // received Code도 useState로 관리해볼까?
-  const updateCode = (receivedCode:string) => {
+  const updateCode = async (receivedCode:string) => {
+    setIsReceived(true);
     setCode((prevCode) => {
       if (receivedCode == prevCode) {
         return prevCode
       }
       else {
-
         return receivedCode;
       }
     });
-    setTimeout(() => {
-      setIsReceived(false);
-    },0);
   }
   // const addComment = (comment:Comment):void => {
   //   setComments([...comments,comment])
@@ -109,22 +110,29 @@ const RoomPage = () => {
 
   },[])
 
+  // 방 정보 받아왔을 때 스냅샷 업데이트
   useEffect(() => {
-    const snapshotDates = roomInfo.getHaveSnapshotDate();
-  
-    snapshotDates.forEach((snapshotDate: any) => {
-      setSnapshots((prevData) => {
-        const yearMap:Map<number, Map<number, Map<number, any>>> = new Map(prevData); // Clone the outer map
-        const monthMap:Map<any, any> = new Map(yearMap.get(year) || new Map()); // Clone the inner month map
-        const dateMap:Map<unknown, unknown> = new Map(monthMap.get(month) || new Map()); // Clone the inner date map
-  
-        dateMap.set(snapshotDate, []);
-        monthMap.set(month, dateMap);
-        yearMap.set(year, monthMap);
-  
-        return yearMap;
+    if(!roomMounted) {
+      setRoomMounted(true);
+      return;
+    }
+    else {
+      const snapshotDates = roomInfo.getHaveSnapshotDate();
+      snapshotDates.forEach((snapshotDate: any) => {
+        setSnapshots((prevData) => {
+          const yearMap:Map<number, Map<number, Map<number, any>>> = new Map(prevData); // Clone the outer map
+          const monthMap:Map<any, any> = new Map(yearMap.get(year) || new Map()); // Clone the inner month map
+          const dateMap:Map<unknown, unknown> = new Map(monthMap.get(month) || new Map()); // Clone the inner date map
+    
+          dateMap.set(snapshotDate, []);
+          monthMap.set(month, dateMap);
+          yearMap.set(year, monthMap);
+    
+          return yearMap;
+        });
       });
-    });
+      setCode(roomInfo.getContent());
+    }
   }, [roomInfo]);
 
   useEffect(() => {
@@ -132,30 +140,45 @@ const RoomPage = () => {
   },[snapshots])
 
   // 코드 pub
-  useEffect(() => {
-    if (!isMounted) {
-      setMounted(!isMounted);
-    }
-    else {
-      console.log(timer.current);
-      if (timer.current) {
-        clearTimeout(timer.current);
-      }
-      else {
-          timer.current = setTimeout(() => {
-            if (!isReceived) {
-              sock.current.sendCode(code);
-            }
-            else {
-              setIsReceived(false);
-            }
-          },500)
-          setTimeout(() => {
-            timer.current = undefined;
-          },0)
-        } 
-      }
-  },[code])
+useEffect(() => {
+  if (!isMounted) {
+    
+    // 첫 마운트 시에는 아무 동작도 하지 않음
+    setMounted(true);
+    return; 
+  }
+
+  if (isInitial) {
+    // 첫 코드 표시 시에는 메세지를 보내지 않음
+    setInitial(false);
+    return;
+  }
+
+  if (isReceived) {
+    setIsReceived(false); // 수신된 경우에는 그냥 상태 초기화
+    return;
+  }
+
+  // 디바운싱 및 코드 송신
+  if (timer.current) {
+    clearTimeout(timer.current);
+  }
+  
+  timer.current = setTimeout(async () => {
+    // 코드가 변경된 후에만 송신
+    await sock.current.sendCode(code);
+
+    // 송신 후 잠시 후에 isReceived를 false로 리셋
+    setTimeout(() => {
+      setIsReceived(false);
+    }, 100); // 100ms 정도 후에 초기화 (이 값은 조정 가능)
+  }, 500);
+
+  return () => {
+    clearTimeout(timer.current); // cleanup 함수
+  };
+}, [code]);
+
 
   return (
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>

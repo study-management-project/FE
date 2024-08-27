@@ -71,12 +71,16 @@ export class Sock {
     }
 
     // 코드 공유
-    public sendCode(code: string) {
-            this.client?.send(
-                "/share-code",
-                {},
-                JSON.stringify({ uuid: this.roomId, content: code })
+    public async sendCode(code: string):Promise<void> {
+        return new Promise((resolve, reject) => {
+            resolve(
+                this.client?.send(
+                    "/share-code",
+                    {},
+                    JSON.stringify({ uuid: this.roomId, content: code })
+                )
             )
+        })
     }
 
     // 코멘트 등록
