@@ -1,0 +1,11 @@
+#blink-carret{
+    animation:blink-effect 1s step-end infinite;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+@keyframes blink-effect {
+    50% {
+        opacity: 0;
+    }
+}
