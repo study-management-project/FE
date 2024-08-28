@@ -56,6 +56,7 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
       onChange={e => setCode(e.target.value)}
       ref={textarea}
       spellCheck='false'
+      id='text-area'
       >
 
       </textarea>

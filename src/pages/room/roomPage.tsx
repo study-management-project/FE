@@ -54,7 +54,6 @@ const RoomPage = () => {
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
   const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<div>Hello</div>);
 
-  // received Code도 useState로 관리해볼까?
   const updateCode = async (receivedCode:string) => {
     setIsReceived(true);
     setCode((prevCode) => {
@@ -139,50 +138,58 @@ const RoomPage = () => {
   },[snapshots])
 
   // 코드 pub
-useEffect(() => {
-  if (!isMounted) {
+  useEffect(() => {
+    if (!isMounted) {
+      
+      // 첫 마운트 시에는 아무 동작도 하지 않음
+      setMounted(true);
+      return; 
+    }
+
+    if (isInitial) {
+      // 첫 코드 표시 시에는 메세지를 보내지 않음
+      setInitial(false);
+      return;
+    }
+
+    if (isReceived) {
+      setIsReceived(false); // 수신된 경우에는 그냥 상태 초기화
+      return;
+    }
+
+    // 디바운싱 및 코드 송신
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
     
-    // 첫 마운트 시에는 아무 동작도 하지 않음
-    setMounted(true);
-    return; 
-  }
+    timer.current = setTimeout(() => {
+      // 코드가 변경된 후에만 송신
+      sock.current.sendCode(code);
 
-  if (isInitial) {
-    // 첫 코드 표시 시에는 메세지를 보내지 않음
-    setInitial(false);
-    return;
-  }
+      // 송신 후 잠시 후에 isReceived를 false로 리셋
+      setTimeout(() => {
+        setIsReceived(false);
+      }, 100); // 100ms 정도 후에 초기화 (이 값은 조정 가능)
+    }, 500);
 
-  if (isReceived) {
-    setIsReceived(false); // 수신된 경우에는 그냥 상태 초기화
-    return;
-  }
-
-  // 디바운싱 및 코드 송신
-  if (timer.current) {
-    clearTimeout(timer.current);
-  }
-  
-  timer.current = setTimeout(() => {
-    // 코드가 변경된 후에만 송신
-    sock.current.sendCode(code);
-
-    // 송신 후 잠시 후에 isReceived를 false로 리셋
-    setTimeout(() => {
-      setIsReceived(false);
-    }, 100); // 100ms 정도 후에 초기화 (이 값은 조정 가능)
-  }, 500);
-
-  return () => {
-    clearTimeout(timer.current); // cleanup 함수
-  };
+    return () => {
+      clearTimeout(timer.current); // cleanup 함수
+    };
   }, [code]);
+
+  const focus = ():void => {
+    let textarea:HTMLElement|null = document.getElementById('text-area');
+    if (textarea) {
+      textarea.focus();
+    }
+    textarea = null;
+  }
 
 
   return (
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
       <RoomHeader isOpen={open} setOpen={setOpen}/>
-      <div className='relative min-h-lvh'>
+      <div className='relative min-h-lvh' onClick={focus}>
         <CodeEditor code={code} setCode={setCode}/>
         <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen}></Drawer>
       </div>
