@@ -1,20 +1,17 @@
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import LineDisplay from './LineDisplay'
 import CodeArea from './CodeArea';
 
-const CodeEditor = () => {
-  const [lines, setLines] = useState<number[]>([1]);
+const CodeEditor = ({code, setCode}:{code:string, setCode:Dispatch<SetStateAction<string>>}) => {
+  // textarea 내용
+
+  // textarea 높이
   const [textareaHeight, setHeight] = useState<number>(1);
 
-  // useEffect(() => {
-  //   lines
-  // },[textareaHeight])
   return (
     <div className='flex relative'>
-      <LineDisplay lines={lines} />
-      <div className='flex-grow relative'>
-        <CodeArea height={textareaHeight} setHeight={setHeight} />
-      </div>
+      <LineDisplay textareaHeight={textareaHeight} />
+      <CodeArea code={code} setCode={setCode} height={textareaHeight} setHeight={setHeight}/>
     </div>
   )
 }

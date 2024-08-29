@@ -10,6 +10,7 @@ const RoomHeader = ({ isOpen, setOpen }: { isOpen: boolean, setOpen: Dispatch<Se
   };
 
   return (
+
     <div className='room-header-container bg-black flex justify-end items-start relative p-0.5'>
       {/* 이해도조사 아이콘 */}
       <div className='top-0 right-0 p-1'>
