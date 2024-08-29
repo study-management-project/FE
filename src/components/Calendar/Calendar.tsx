@@ -27,31 +27,33 @@ const Calendar = ():JSX.Element => {
     ];
 
     return (
-        <div className="max-w-sm mx-auto p-4 bg-gray-500 text-white text-opacity-50 rounded-lg">
-            <div className="flex justify-center text-lg mb-2">
-                <div className="bg-black w-14 h-8 rounded-lg text-center">
-                    {month + 1}월
-                </div>
-            </div>
-            <div className="grid grid-cols-7 text-center gap-1">
-                {daysOfWeek.map((day, idx) => (
-                    <div key={idx} className={`font-bold ${day === '토' ? 'text-blue-500 text-opacity-75' : day === '일' ?  'text-red-500 text-opacity-75' : ''}`}>
-                        {day}
+        <div className="w-80 h-32">
+            <div className="mx-auto p-4 bg-transparent text-white text-opacity-50 rounded-lg">
+                <div className="flex justify-center items-center text-lg mb-3">
+                    <div className="bg-black w-12 h-9 rounded-lg text-center leading-9 text-[1rem] font-bold">
+                        {month + 1}월
                     </div>
-                ))}
-                {calendarDays.map((day, idx) => (
-                    <>
-                        <div
-                            key={idx}
-                            className={`h-16 flex pt-1 justify-center ${day === date ? 'bg-slate-900 text-white' : 'bg-transparent'} ${day ? (idx % 7 === 0 ? 'text-red-500 text-opacity-75' : idx % 7 === 6 ? 'text-blue-500 text-opacity-75' : '') : ''}`}
-                        >
-                            {day ? day : ''}
+                </div>
+                <div className="grid grid-cols-7 text-center gap-1">
+                    {daysOfWeek.map((day, idx) => (
+                        <div key={idx} className={`font-bold ${day === '토' ? 'text-blue-500 text-opacity-75' : day === '일' ?  'text-red-500 text-opacity-75' : ''}`}>
+                            {day}
                         </div>
-                        {(idx + 1) % 7 === 0 && (
-                            <div className="col-span-7 h-px bg-white opacity-20"></div>
-                        )}
-                    </>
-                ))}
+                    ))}
+                    {calendarDays.map((day, idx) => (
+                        <>
+                            <div
+                                key={idx}
+                                className={`h-10 flex justify-center ${day === date ? 'bg-slate-900 text-white' : 'bg-transparent'} ${day ? (idx % 7 === 0 ? 'text-red-500 text-opacity-75' : idx % 7 === 6 ? 'text-blue-500 text-opacity-75' : '') : ''}`}
+                            >
+                                {day ? day : ''}
+                            </div>
+                            {(idx + 1) % 7 === 0 && (
+                                <div className="col-span-7 h-[0.5px] bg-white opacity-10"></div>
+                            )}
+                        </>
+                    ))}
+                </div>
             </div>
         </div>
     );

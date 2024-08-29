@@ -11,6 +11,9 @@ import { Sock } from '../../utils/socket/Socket';
 import { RoomInfo } from '../../model/RoomInfo';
 import { AxiosResponse } from 'axios';
 import axi from '../../utils/axios/Axios';
+import Calendar from '../../components/Calendar/Calendar';
+import CodeSnapshotUI from '../../components/CodeSnapshot/CodeSnapshot';
+
 
 const RoomPage = () => {
   // 마운트 시 useEffect 실행 방지
@@ -52,8 +55,26 @@ const RoomPage = () => {
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
-  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<div>Hello</div>);
+  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<Calendar />);
 
+
+  // 아이콘이 클릭 되었을 때 동작
+  // 0: 이해도 조사, 1: 코드 스냅샷
+  const onIconClicked = (index:number):void => {
+    // 자식 변경
+    if (index === 0) {
+      setDrawerTitle("이해도 조사")
+      setDrawerChildren(<div>이해도 조사</div>)
+    }
+    else {
+      setDrawerTitle("코드 스냅샷")
+      setDrawerChildren(<CodeSnapshotUI />)
+    }
+  }
+
+
+
+  // 코드 업데이트 로직
   const updateCode = async (receivedCode:string) => {
     setIsReceived(true);
     setCode((prevCode) => {
