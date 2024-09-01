@@ -11,6 +11,10 @@ export class CodeSnapshot {
     this.createdAt = createdAt;
   }
 
+  getTitle():string {
+    return this.title;
+  }
+
   getContent():string {
     return this.content;
   }
@@ -27,12 +31,11 @@ export class CodeSnapshot {
     this.createdAt = new Date().toString();
   }
 
-  static fromJson(json:AxiosResponse<any,any>):CodeSnapshot {
-    const data = json.data; 
+  static fromJson(json:Object):CodeSnapshot {
     return new CodeSnapshot(
-      data.title,
-      data.content,
-      data.createdDate
+      json.title,
+      json.content,
+      json.createdDate
     )
   }
 }

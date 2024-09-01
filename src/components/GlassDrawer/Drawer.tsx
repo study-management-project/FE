@@ -2,6 +2,10 @@ import { Dispatch, ReactNode, SetStateAction } from "react";
 import "./Drawer.css"
 
 export default function Drawer({title, children, isOpen, setOpen}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>}) {
+  const closeDrawer = ():void => {
+    setOpen(false);
+  }
+
   return (
     <>
       <section
@@ -12,7 +16,10 @@ export default function Drawer({title, children, isOpen, setOpen}:{title:string,
         style={{transitionProperty: "transform"}}
       >
         <article className="relative w-full pb-10 flex flex-col space-y-6 overflow-y-scroll h-full">
-          <header className="p-6 font-bold text-sm text-white text-opacity-75">{title}</header>
+          <div className="flex justify-start p-6">
+            <img className="p-1 w-6 h-6 mr-2" src="/icons/doubleArrow.png" alt="drawer 닫음 버튼" onClick={closeDrawer}/>
+            <header className="font-bold text-white text-opacity-75"> {title}</header>
+          </div>
           <div className="flex justify-center">
             {children}
           </div>

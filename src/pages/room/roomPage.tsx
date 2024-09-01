@@ -7,7 +7,7 @@ import { Comment } from '../../model/Comment';
 import Drawer from '../../components/GlassDrawer/Drawer';
 import RoomHeader from '../../components/RoomHeader';
 import CodeEditor from '../../components/CodeEditor/CodeEditor';
-import { Sock } from '../../utils/socket/Socket';
+// import { Sock } from '../../utils/socket/Socket';
 import { RoomInfo } from '../../model/RoomInfo';
 import { AxiosResponse } from 'axios';
 import axi from '../../utils/axios/Axios';
@@ -50,25 +50,32 @@ const RoomPage = () => {
   // 코멘트들
   const [comments, setComments] = useState<Comment[]>([]);
   // 소켓 객체
-  const sock = useRef<Sock>(Sock.createInstance());
+  // const sock = useRef<Sock>(Sock.createInstance());
   
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
-  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<Calendar />);
+  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId}/>);
 
 
   // 아이콘이 클릭 되었을 때 동작
-  // 0: 이해도 조사, 1: 코드 스냅샷
-  const onIconClicked = (index:number):void => {
-    // 자식 변경
-    if (index === 0) {
-      setDrawerTitle("이해도 조사")
-      setDrawerChildren(<div>이해도 조사</div>)
-    }
-    else {
-      setDrawerTitle("코드 스냅샷")
-      setDrawerChildren(<CodeSnapshotUI />)
+  const onIconClicked = (event:React.MouseEvent) => {
+    const clickedTitle:string|null = event.currentTarget.id;
+    if (clickedTitle) {
+      setDrawerTitle((prevData) => {
+        if (prevData === clickedTitle) {
+          setOpen(!open);
+        } else {
+          if (clickedTitle === "이해도 조사") {
+            setDrawerChildren(<div>이해도 조사</div>)
+          }
+          else {
+            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId}/>)
+          }
+          setOpen(true);
+        }
+        return clickedTitle;
+      });
     }
   }
 
@@ -98,8 +105,8 @@ const RoomPage = () => {
   const pageOnload = async() => {
     const response:AxiosResponse = await axi.get(`room/${params.roomId}`);
     setRoomInfo(RoomInfo.fromJson(response.data));
-    sock.current.connect(['code'],[updateCode]);
-    await sock.current.joinRoom(params.roomId);
+    // sock.current.connect(['code'],[updateCode]);
+    // await sock.current.joinRoom(params.roomId);
     // Sock.subscribe('comment'
     //   , addComment
     // );
@@ -112,51 +119,56 @@ const RoomPage = () => {
 
   // 페이지 mount시
   useEffect(() => {
-
     pageOnload();
-    
     // 브라우저 종료 시 unsubscribe;
-    window.addEventListener('beforeunload', () => {
-      sock.current.unsubscribe();
-    })
+    // window.addEventListener('beforeunload', () => {
+    //   sock.current.unsubscribe();
+    // })
 
-    return () => {
-      sock.current.unsubscribe();
-      window.removeEventListener('beforeunload', () => {
-        sock.current.unsubscribe();
-      });
-    }
+    // return () => {
+    //   sock.current.unsubscribe();
+    //   window.removeEventListener('beforeunload', () => {
+    //     sock.current.unsubscribe();
+    //   });
+    // }
 
   },[])
 
+  const updateSnapshots = async (prevData:Map<number, Map<number, Map<number, any>>>, snapshotDate:number, snapshotDates:number[]):Promise<Map<number, Map<number, Map<number, any>>>> => {
+    const yearMap:Map<number, Map<number, Map<number, any>>> = new Map(prevData); // Clone the outer map
+    const monthMap:Map<any, any> = new Map(yearMap.get(year) || new Map()); // Clone the inner month map
+    const dateMap:Map<unknown, unknown> = new Map(monthMap.get(month) || new Map()); // Clone the inner date map
+    
+    const response:AxiosResponse = await axi.get(`room/${params.roomId}/snapshot/${year}/${month}/${snapshotDates[snapshotDates.length-1]}`);
+    const dailySnapshot:CodeSnapshot[] = response.data.map((el:any) => CodeSnapshot.fromJson(el));
+
+    dateMap.set(snapshotDate, dailySnapshot);
+    monthMap.set(month, dateMap);
+    yearMap.set(year, monthMap);
+
+    return yearMap;
+  }
+
   // 방 정보 받아왔을 때 스냅샷 업데이트
   useEffect(() => {
-    if(!roomMounted) {
+    if (roomMounted === false) {
       setRoomMounted(true);
-      return;
     }
     else {
-      const snapshotDates = roomInfo.getHaveSnapshotDate();
-      snapshotDates.forEach((snapshotDate: any) => {
-        setSnapshots((prevData) => {
-          const yearMap:Map<number, Map<number, Map<number, any>>> = new Map(prevData); // Clone the outer map
-          const monthMap:Map<any, any> = new Map(yearMap.get(year) || new Map()); // Clone the inner month map
-          const dateMap:Map<unknown, unknown> = new Map(monthMap.get(month) || new Map()); // Clone the inner date map
-    
-          dateMap.set(snapshotDate, []);
-          monthMap.set(month, dateMap);
-          yearMap.set(year, monthMap);
-    
-          return yearMap;
-        });
-      });
-      setCode(roomInfo.getContent());
+      const updateAllSnapshots = async () => {
+        const snapshotDates = roomInfo.getHaveSnapshotDate();
+        for (const snapshotDate of snapshotDates) {
+          const updatedSnapshots = await updateSnapshots(snapshots, snapshotDate, snapshotDates);
+          
+          setSnapshots(updatedSnapshots);
+        }
+  
+        setCode(roomInfo.getContent());
+      };
+      updateAllSnapshots(); // 비동기 함수 호출
     }
   }, [roomInfo]);
 
-  useEffect(() => {
-    console.log(snapshots);
-  },[snapshots])
 
   // 코드 pub
   useEffect(() => {
@@ -185,7 +197,7 @@ const RoomPage = () => {
     
     timer.current = setTimeout(() => {
       // 코드가 변경된 후에만 송신
-      sock.current.sendCode(code);
+      // sock.current.sendCode(code);
 
       // 송신 후 잠시 후에 isReceived를 false로 리셋
       setTimeout(() => {
@@ -198,6 +210,10 @@ const RoomPage = () => {
     };
   }, [code]);
 
+  useEffect(() => {
+    console.log(snapshots);
+  },[snapshots])
+
   const focus = ():void => {
     let textarea:HTMLElement|null = document.getElementById('text-area');
     if (textarea) {
@@ -209,10 +225,10 @@ const RoomPage = () => {
 
   return (
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
-      <RoomHeader isOpen={open} setOpen={setOpen}/>
+      <RoomHeader isOpen={open} setOpen={setOpen} onIconClicked={onIconClicked}/>
       <div className='relative min-h-lvh' onClick={focus}>
         <CodeEditor code={code} setCode={setCode}/>
-        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen}></Drawer>
+        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} />
       </div>
     </div>
   )
