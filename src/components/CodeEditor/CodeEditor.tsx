@@ -16,4 +16,4 @@ const CodeEditor = ({code, setCode}:{code:string, setCode:Dispatch<SetStateActio
   )
 }
 
-export default CodeEditor
+export default CodeEditor;

@@ -2,24 +2,20 @@ import { AxiosResponse } from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import axi from "../../utils/axios/Axios";
 import { CodeSnapshot } from "../../model/CodeSnapshot";
+import { Map } from "immutable";
 
 const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = today.getMonth();
+    const month = today.getMonth()+1;
     const date = today.getDate();
     return { year, month, date };
 };
 
 const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
-const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnapshots}:{snapshots:Map<number, Map<number, Map<number, any>>>, setSnapshots:Dispatch<SetStateAction<Map<number, Map<number, Map<number, any>>>>>, roomId:string|undefined, dailySnapshots:CodeSnapshot[], setDailySnapshots:Dispatch<SetStateAction<CodeSnapshot[]>> }):JSX.Element => {
+const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedYear, selectedMonth, selectedDay, setYear, setMonth, setDay }:{snapshots:Map<string, Map<string, Map<string, any>>>, setSnapshots:Dispatch<SetStateAction<Map<string, Map<string, Map<string, any>>>>>, roomId:string|undefined, dailySnapshots:CodeSnapshot[], setDailySnapshots:Dispatch<SetStateAction<CodeSnapshot[]>>, selectedYear:number, selectedMonth:number, selectedDay:number, setYear:Dispatch<SetStateAction<number>>, setMonth:Dispatch<SetStateAction<number>>, setDay:Dispatch<SetStateAction<number>> }):JSX.Element => {
     const { year, month, date } = getCurrentDate();
-
-    const [isMounted, setMounted] = useState<boolean>(false);
-    const [selectedYear, setYear] = useState<number>(year);
-    const [selectedMonth, setMonth] = useState<number>(month);
-    const [selectedDay, setDay] = useState<number>(-1);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [calendarDays, setCalendarDays] = useState<(number | null)[]>([]);
 
@@ -28,8 +24,8 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
 
     // 달력 업데이트
     const updateCalendar = (year: number, month: number) => {
-        const firstDayOfMonth = new Date(year, month, 1);
-        const lastDayOfMonth = new Date(year, month + 1, 0);
+        const firstDayOfMonth = new Date(year, month-1, 1);
+        const lastDayOfMonth = new Date(year, month-1, 0);
 
         const startOffset = firstDayOfMonth.getDay();
         const daysInMonth = lastDayOfMonth.getDate();
@@ -45,28 +41,21 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
 
     // 선택된 월에 대해 스냅샷이 존재하는 날짜 리스트 요청하고 업데이트
     const getMonthlySnapshots = async(year:number, month:number):Promise<void> => {
-        const response:AxiosResponse = await axi.get(`room/${roomId}/snapshot/${year}/${month+1}`);
+        const response:AxiosResponse = await axi.get(`room/${roomId}/snapshot/${year}/${month}`);
         setMonthlySnapshots(response.data);
     }
 
     // 월에 스냅샷이 존재하는 날짜 리스트가 바뀌었을 때 스냅샷 Map 업데이트
     useEffect(() => {
-        console.log(monthlySnapshots);
         if (monthlySnapshots.length === 0 ) {
             return;
         } else {
             setSnapshots((prevData) => {
-                const yearMap:Map<number, Map<number, Map<number, any>>> = new Map(prevData);
-                const monthMap:Map<any, any> = new Map(yearMap.get(selectedYear) || new Map());
-                const dateMap:Map<unknown, unknown> = new Map(monthMap.get(selectedMonth) || new Map());
-
+                const nextState = Map(prevData);
                 for (let day of monthlySnapshots) {
-                    dateMap.set(day, []);
+                    nextState.setIn([selectedDay.toString(), selectedMonth.toString(), day.toString()], []);
                 }
-                monthMap.set(month, dateMap);
-                yearMap.set(year, monthMap);
-            
-                return yearMap;
+                return nextState;
             })
         }
     },[monthlySnapshots])
@@ -94,14 +83,17 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
     // 일 변경
     const handleDayChange = (e: React.MouseEvent):void => {
         const day:number = parseInt(e.currentTarget.getAttribute('title') as string, 10);
-        console.log(day);
         setDay(day);
     };
 
     // 해당 날짜의 스냅샷들을 모두 가져오기
     const getDailySnapshots = async(year:number, month:number, day: number):Promise<void> => {
-        const response = await axi.get(`room/${roomId}/snapshot/${year}/${month+1}/${day}`);
+        if (selectedDay === -1) {
+            return
+        }
+        const response = await axi.get(`room/${roomId}/snapshot/${year}/${month}/${day}`);
         const snapshotsList:CodeSnapshot[] = response.data.map((el:any) => (CodeSnapshot.fromJson(el)));
+        console.log(snapshotsList);
         setDailySnapshots(snapshotsList);
     }
 
@@ -114,11 +106,9 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
     useEffect(() => {
         updateCalendar(selectedYear, selectedMonth);
         getMonthlySnapshots(selectedYear, selectedMonth);
+        setDay(-1);
+        setDailySnapshots([]);
     },[selectedYear, selectedMonth])
-
-    useEffect(() => {
-        console.log(dailySnapshots);
-    },[dailySnapshots])
 
     return (
         <div className="w-80">
@@ -129,7 +119,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
                         onClick={toggleDropdown}
                         >
                             <div className="text-sm w-full text-center">{selectedYear}</div>
-                            <div>{selectedMonth + 1}월</div>
+                            <div>{selectedMonth}월</div>
                         </div>
                     </div>
                     {isDropdownOpen && (
@@ -162,7 +152,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
                                             key={monthOption}
                                             value={monthOption}
                                         >
-                                            {monthOption + 1}월
+                                            {monthOption}월
                                         </option>
                                     )
                                 )}
@@ -183,7 +173,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, dailySnapshots, setDailySnap
                                 key={idx}
                                 title={day?.toString()}
                                 className={`h-10 flex-col justify-center rounded-md 
-                                    ${selectedYear === year && selectedMonth === month && day === date ? 'bg-slate-900 opacity-75 text-white' : selectedDay==day ? 'bg-green-400 bg-opacity-75 text-white' : 'bg-transparent'} ${day ? (idx % 7 === 0 ? 'text-red-500 text-opacity-75' : idx % 7 === 6 ? 'text-blue-500 text-opacity-75' : '') : ''} ${day && monthlySnapshots.includes(day) ? 'hover:cursor-pointer hover:bg-white hover:bg-opacity-10' : '' }`}
+                                    ${selectedYear === year && selectedMonth === month && day === date ? 'bg-slate-900 opacity-75 text-white' : selectedYear === year && selectedMonth === month && selectedDay==day ? 'bg-green-400 bg-opacity-75 text-white' : 'bg-transparent'} ${day ? (idx % 7 === 0 ? 'text-red-500 text-opacity-75' : idx % 7 === 6 ? 'text-blue-500 text-opacity-75' : '') : ''} ${day && monthlySnapshots.includes(day) ? 'hover:cursor-pointer hover:bg-white hover:bg-opacity-10' : '' }`}
                                 onClick={day && monthlySnapshots.includes(day) ? handleDayChange : undefined}
                             >
                                 <div>{day ? day : ''}</div>
