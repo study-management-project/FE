@@ -1,12 +1,20 @@
 import { Dispatch, SetStateAction, } from "react"
 
-const RoomHeader = ({ isOpen, setOpen }: { isOpen: boolean, setOpen: Dispatch<SetStateAction<boolean>> }) => {
+type RoomHeaderProps = {
+  isOpen: boolean,
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  onIconClick: (type: 'checkUp' | 'codeSnapshot') => void;
+};
+
+const RoomHeader = ({ isOpen, setOpen, onIconClick }: RoomHeaderProps) => {
   const handleCodeSnapshotClick = () => {
     setOpen(!isOpen);
+    onIconClick('codeSnapshot');
   };
 
   const handleCheckUpClick = () => {
     setOpen(!isOpen);
+    onIconClick('checkUp');
   };
 
   return (
