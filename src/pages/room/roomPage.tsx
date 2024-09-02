@@ -185,6 +185,7 @@ const RoomPage = () => {
     }
     else {
       updateSnapshots(); // 비동기 함수 호출
+      setCode(roomInfo.getContent());
     }
   }, [roomInfo]);
 
