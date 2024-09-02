@@ -2,7 +2,7 @@ import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from
 import "./Drawer.css"
 import 'material-icons/iconfont/material-icons.css';
 
-export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void}) {
+export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, isDisabled, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, isDisabled:boolean, restoreCode:Function}) {
   const [isCopied, setCopied] = useState<boolean>(false);
   const closeDrawer = ():void => {
     setOpen(false);
@@ -39,6 +39,15 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
         style={{transitionProperty: "transform"}}
       >
         <div className="absolute -translate-x-20 mt-4">
+          {
+            isDisabled ?
+            <span
+            className="material-icons-outlined text-white hover:cursor-pointer"
+            onClick={restoreCode}
+            >setting_backup_restore</span>
+            :
+            <span></span>
+          }
           {
            !isCopied 
            ?

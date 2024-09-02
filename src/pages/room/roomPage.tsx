@@ -37,6 +37,10 @@ const RoomPage = () => {
   const stringYear:string = year.toString();
   const stringMonth:string = month.toString();
   const stringDate:string = date.toString();
+
+  // textarea disabled
+  const [disabled, setDisabled] = useState<boolean>(false);
+
   const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
   const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2? month : "0"+month}-${date.toString.length == 2 ? date : "0"+date}`);
@@ -84,7 +88,7 @@ const RoomPage = () => {
             setDrawerChildren(<div>이해도 조사</div>)
           }
           else {
-            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots}/>);
+            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} setDisabled={setDisabled}/>);
           }
           setOpen(true);
         }
@@ -94,6 +98,9 @@ const RoomPage = () => {
   }
 
 
+  const restoreCode = () => {
+
+  }
 
   // 코드 업데이트 로직
   const updateCode = async (receivedCode:string) => {
@@ -247,8 +254,8 @@ const RoomPage = () => {
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
       <RoomHeader isOpen={open} setOpen={setOpen} onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
       <div className='relative min-h-lvh' onClick={focus}>
-        <CodeEditor code={code} setCode={setCode}/>
-        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot}/>
+        <CodeEditor code={code} setCode={setCode} isDisabled={disabled}/>
+        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} isDisabled={disabled} restoreCode={restoreCode}/>
       </div>
     </div>
   )
