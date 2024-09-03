@@ -38,8 +38,8 @@ const RoomPage = () => {
   const stringMonth:string = month.toString();
   const stringDate:string = date.toString();
 
-  // textarea disabled
-  const [disabled, setDisabled] = useState<boolean>(false);
+  // textarea disabled (유저 권한에 따름)
+  const [disabled, setDisabled] = useState<boolean>(true);
 
   const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
@@ -49,6 +49,8 @@ const RoomPage = () => {
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("","","","",[],[],[]));
   // 코드
   const [code, setCode] = useState<string>(""); 
+  // 코드 스냅샷 확인 후 되돌리기 위해 이전 코드를 저장
+  const [prevCode, setPrevCode] = useState<string|undefined>(undefined);
   // 스냅샷들 (년:월:일:[])
   const initialSnapshots:Map<string, Map<string, Map<string, any>>> = Map([
     [stringYear, Map([
@@ -68,8 +70,7 @@ const RoomPage = () => {
   
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
-  const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
-  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots}/>);
+  
 
   const saveSnapshot = ():void => {
     const savedSnapshot:CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString())
@@ -88,7 +89,7 @@ const RoomPage = () => {
             setDrawerChildren(<div>이해도 조사</div>)
           }
           else {
-            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} setDisabled={setDisabled}/>);
+            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>);
           }
           setOpen(true);
         }
@@ -98,16 +99,21 @@ const RoomPage = () => {
   }
 
 
-  const restoreCode = () => {
+  const savePrevCode = ():void => {
+    setPrevCode(code);
+  }
 
+  const restoreCode = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>):void => {
+    setCode(prevCode);
+    setPrevCode(undefined);
   }
 
   // 코드 업데이트 로직
   const updateCode = async (receivedCode:string) => {
     setIsReceived(true);
-    setCode((prevCode) => {
-      if (receivedCode == prevCode) {
-        return prevCode
+    setCode((prev) => {
+      if (receivedCode == prev) {
+        return prev;
       }
       else {
         return receivedCode;
@@ -145,10 +151,21 @@ const RoomPage = () => {
 
   // 페이지 로드 시 방 정보, 
   const pageOnload = async() => {
-    const response:AxiosResponse = await axi.get(`room/${params.roomId}`);
-    setRoomInfo(RoomInfo.fromJson(response.data));
+    // 방 정보
+    const roomInfoResponse:AxiosResponse = await axi.get(`room/${params.roomId}`);
+    setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
+    // 소켓 연결
     sock.current.connect(['code', 'snapshot'],[updateCode, getNewSnapshot]);
     await sock.current.joinRoom(params.roomId);
+
+    // 오늘자 스냅샷
+    const dailySnapshotsResponse:AxiosResponse = await axi.get(`room/${params.roomId}/snapshot/${year}/${month}/${date}`);
+    const todayDailySnapshots:CodeSnapshot[] = dailySnapshotsResponse.data.map((el => CodeSnapshot.fromJson(el)));
+    setSnapshots((prevData) => {
+    const nextState = prevData.setIn([stringYear, stringMonth, stringDate], todayDailySnapshots);
+        return nextState;
+    });
+    setDailySnapshots(todayDailySnapshots);
     // Sock.subscribe('comment'
     //   , addComment
     // );
@@ -158,6 +175,8 @@ const RoomPage = () => {
     // Sock.subscribe('checkup');
     // 교사용 추가 예정
   }
+
+  useEffect(() => {console.log(dailySanpshots)},[dailySanpshots])
 
   // 페이지 mount시
   useEffect(() => {
@@ -184,6 +203,8 @@ const RoomPage = () => {
       return nextState;
   });
   }
+  const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
+  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>);
 
   // 방 정보 받아왔을 때 스냅샷 업데이트
   useEffect(() => {
@@ -246,7 +267,7 @@ const RoomPage = () => {
   }
 
   useEffect(()=>{
-    setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots}/>)
+    setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>)
   },[snapshots, dailySanpshots]);
 
 
@@ -255,7 +276,7 @@ const RoomPage = () => {
       <RoomHeader isOpen={open} setOpen={setOpen} onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
       <div className='relative min-h-lvh' onClick={focus}>
         <CodeEditor code={code} setCode={setCode} isDisabled={disabled}/>
-        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} isDisabled={disabled} restoreCode={restoreCode}/>
+        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} isDisabled={disabled} prevCode={prevCode} restoreCode={restoreCode}/>
       </div>
     </div>
   )

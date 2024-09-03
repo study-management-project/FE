@@ -2,7 +2,7 @@ import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from
 import "./Drawer.css"
 import 'material-icons/iconfont/material-icons.css';
 
-export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, isDisabled, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, isDisabled:boolean, restoreCode:Function}) {
+export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, prevCode, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, isDisabled:boolean, prevCode:string , restoreCode:(e:React.MouseEvent<HTMLSpanElement, MouseEvent>) => void}) {
   const [isCopied, setCopied] = useState<boolean>(false);
   const closeDrawer = ():void => {
     setOpen(false);
@@ -38,21 +38,26 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
         }
         style={{transitionProperty: "transform"}}
       >
-        <div className="absolute -translate-x-20 mt-4">
+        <div className="absolute -translate-x-28 mt-4">
           {
-            isDisabled ?
+            prevCode === undefined
+            ?
             <span
-            className="material-icons-outlined text-white hover:cursor-pointer"
-            onClick={restoreCode}
-            >setting_backup_restore</span>
+            className="material-icons text-white hover:cursor-pointer invisible"
+            >restore
+            </span>
             :
-            <span></span>
+            <span
+            className="material-icons text-white hover:cursor-pointer"
+            onClick={restoreCode}
+            >restore
+            </span>
           }
           {
            !isCopied 
            ?
             <span 
-              className="material-icons-outlined text-white mr-2 hover:cursor-pointer z-20"
+              className="material-icons-outlined text-white ml-2 mr-2 hover:cursor-pointer z-20"
               onClick={copyCode}
             >content_copy
             </span>
@@ -70,7 +75,7 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
         </div>
         <article className="relative w-full pb-10 flex flex-col space-y-6 overflow-y-scroll h-full">
           <div className="flex justify-start p-6">
-            <img className="p-1 w-6 h-6 mr-2" src="/icons/doubleArrow.png" alt="drawer 닫음 버튼" onClick={closeDrawer}/>
+            <img className="p-1 w-6 h-6 mr-2 cursor-pointer" src="/icons/doubleArrow.png" alt="drawer 닫음 버튼" onClick={closeDrawer}/>
             <header className="font-bold text-white text-opacity-75"> {title}</header>
           </div>
           <div className="flex justify-center">

@@ -111,7 +111,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedY
     },[selectedYear, selectedMonth])
 
     return (
-        <div className="w-80">
+        <div className="w-[20vw]">
             <div className="mx-auto p-4 bg-transparent text-white text-opacity-50 rounded-lg">
                 <div className="flex relative justify-center items-center text-lg mb-3">
                     <div className="flex flex-col">
