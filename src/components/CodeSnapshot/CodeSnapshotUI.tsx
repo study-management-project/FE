@@ -17,14 +17,7 @@ const CodeSnapshotUI = ({year, month, snapshots, setIsReceived, setCode, setSnap
     savePrevCode();
     setIsReceived(true);
     setCode(code);
-    setTimeout(() => {
-      setIsReceived(false)
-    },200);
   }
-
-  useEffect(() => {
-    
-  },[snapshots])
 
   return (
     <div>

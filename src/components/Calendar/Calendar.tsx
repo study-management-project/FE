@@ -93,7 +93,6 @@ const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedY
         }
         const response = await axi.get(`room/${roomId}/snapshot/${year}/${month}/${day}`);
         const snapshotsList:CodeSnapshot[] = response.data.map((el:any) => (CodeSnapshot.fromJson(el)));
-        console.log(snapshotsList);
         setDailySnapshots(snapshotsList);
     }
 

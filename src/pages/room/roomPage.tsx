@@ -24,7 +24,7 @@ const RoomPage = () => {
   // 처음 표시되어야할 코드를 표시할 때 메세지 송신 방지용 flag
   const [isInitial, setInitial] =useState<boolean>(true); 
   // 내가 받은 것인지, 남에게서 받은 것인지 판별
-  const [isReceived, setIsReceived] = useState<boolean>(false);
+  const [isReceived, setIsReceived] = useState<boolean>(true);
   // 파라미터
   const params:Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();;
   // 디바운싱 timer
@@ -104,8 +104,12 @@ const RoomPage = () => {
   }
 
   const restoreCode = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>):void => {
+    setIsReceived(true);
     setCode(prevCode);
     setPrevCode(undefined);
+    setTimeout(() => {
+      setIsReceived(false);
+    },300)
   }
 
   // 코드 업데이트 로직
@@ -175,8 +179,6 @@ const RoomPage = () => {
     // Sock.subscribe('checkup');
     // 교사용 추가 예정
   }
-
-  useEffect(() => {console.log(dailySanpshots)},[dailySanpshots])
 
   // 페이지 mount시
   useEffect(() => {
