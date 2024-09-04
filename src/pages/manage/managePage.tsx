@@ -8,6 +8,7 @@ const ManagePage = () => {
   const getRooms = async() => {
     console.log(axi.defaults.withCredentials);
     const response:AxiosResponse = await axi.get('rooms');
+    console.log(response);
     return response.data;
   }
 
@@ -19,13 +20,12 @@ const ManagePage = () => {
   useEffect(() => {
     getCookie();
     getRooms();
-    
   },[])
 
   return (
     <div>
       매니지 페이지
-      <button onClick = {() => {console.log(document.cookie)}}>
+      <button onClick = {() => {getRooms()}}>
         쿠키 테스트
       </button>
     </div>

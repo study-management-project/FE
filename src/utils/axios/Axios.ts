@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 class Axios {
     private static instance: AxiosInstance;
@@ -13,7 +13,6 @@ class Axios {
                 'Content-Type': 'application/json'
             },
             withCredentials: true,
-            withXSRFToken:true
         })
         // 인스턴스에 interceptors 설정
         // Axios.instance.interceptors.response.use((res) => {

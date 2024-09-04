@@ -2,7 +2,7 @@ import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from
 import "./Drawer.css"
 import 'material-icons/iconfont/material-icons.css';
 
-export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, prevCode, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, isDisabled:boolean, prevCode:string , restoreCode:(e:React.MouseEvent<HTMLSpanElement, MouseEvent>) => void}) {
+export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, prevCode, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, prevCode:string|undefined , restoreCode:(e:React.MouseEvent<HTMLSpanElement, MouseEvent>) => void}) {
   const [isCopied, setCopied] = useState<boolean>(false);
   const closeDrawer = ():void => {
     setOpen(false);

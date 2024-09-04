@@ -1,8 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { json, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { CodeSnapshot } from '../../model/CodeSnapshot';
-import { CodeSnapshotRepository } from '../../services/CodeSnapshotRepository';
-import { CommentRepository } from '../../services/CommentRepository';
 import { Comment } from '../../model/Comment';
 import Drawer from '../../components/GlassDrawer/Drawer';
 import RoomHeader from '../../components/RoomHeader';
@@ -11,7 +9,6 @@ import { Sock } from '../../utils/socket/Socket';
 import { RoomInfo } from '../../model/RoomInfo';
 import { AxiosResponse } from 'axios';
 import axi from '../../utils/axios/Axios';
-import Calendar from '../../components/Calendar/Calendar';
 import CodeSnapshotUI from '../../components/CodeSnapshot/CodeSnapshotUI';
 import { IMessage } from '@stomp/stompjs';
 import { Map } from 'immutable';
@@ -39,9 +36,9 @@ const RoomPage = () => {
   const stringDate:string = date.toString();
 
   // textarea disabled (유저 권한에 따름)
-  const [disabled, setDisabled] = useState<boolean>(true);
+  // const [disabled, setDisabled] = useState<boolean>(true);
 
-  const commentPage = useRef<number>(0);
+  // const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
   const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2? month : "0"+month}-${date.toString.length == 2 ? date : "0"+date}`);
 
@@ -64,7 +61,7 @@ const RoomPage = () => {
   // 선택된 날짜에 존재하는 코드 스냅샷들
   const [dailySanpshots, setDailySnapshots] = useState<CodeSnapshot[]>([]);
   // 코멘트들
-  const [comments, setComments] = useState<Comment[]>([]);
+  // const [comments, setComments] = useState<Comment[]>([]);
   // 소켓 객체
   const sock = useRef<Sock>(Sock.createInstance());
   
@@ -105,7 +102,9 @@ const RoomPage = () => {
 
   const restoreCode = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>):void => {
     setIsReceived(true);
-    setCode(prevCode);
+    if (prevCode) {
+      setCode(prevCode);
+    }
     setPrevCode(undefined);
     setTimeout(() => {
       setIsReceived(false);
@@ -275,10 +274,10 @@ const RoomPage = () => {
 
   return (
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
-      <RoomHeader isOpen={open} setOpen={setOpen} onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
+      <RoomHeader onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
       <div className='relative min-h-lvh' onClick={focus}>
-        <CodeEditor code={code} setCode={setCode} isDisabled={disabled}/>
-        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} isDisabled={disabled} prevCode={prevCode} restoreCode={restoreCode}/>
+        <CodeEditor code={code} setCode={setCode}/>
+        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} prevCode={prevCode} restoreCode={restoreCode}/>
       </div>
     </div>
   )
