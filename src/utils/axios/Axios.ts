@@ -12,7 +12,8 @@ class Axios {
             headers: {
                 'Content-Type': 'application/json'
             },
-            withCredentials: true
+            withCredentials: true,
+            withXSRFToken:true
         })
         // 인스턴스에 interceptors 설정
         // Axios.instance.interceptors.response.use((res) => {
