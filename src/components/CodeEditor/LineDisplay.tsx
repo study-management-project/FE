@@ -6,7 +6,7 @@ const LineDisplay = ({textareaHeight}:{textareaHeight:number}):JSX.Element => {
 
   // textarea 높이에 따른
   const createLines = (length:number):Array<number> => {
-    return Array.from({length:length}, (v,i) => i+1);
+    return Array.from({length:length}, (_v,i) => i+1);
   }
 
   useEffect(() => {

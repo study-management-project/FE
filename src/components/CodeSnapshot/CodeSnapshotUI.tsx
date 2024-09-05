@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import Calendar from '../Calendar/Calendar'
 import { CodeSnapshot } from '../../model/CodeSnapshot'
 import SnapshotList from './SnapshotList';

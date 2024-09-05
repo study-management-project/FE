@@ -42,7 +42,7 @@ const RoomPage = () => {
   const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2? month : "0"+month}-${date.toString.length == 2 ? date : "0"+date}`);
 
   // 방 정보
-  const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("","","","",[],[],[]));
+  const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("","",""));
   // 코드
   const [code, setCode] = useState<string>(""); 
   // 코드 스냅샷 확인 후 되돌리기 위해 이전 코드를 저장
@@ -96,12 +96,14 @@ const RoomPage = () => {
 
 
   const savePrevCode = ():void => {
-    setPrevCode(code);
+    if (prevCode === undefined) {
+      setPrevCode(code);
+    }
   }
 
-  const restoreCode = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>):void => {
+  const restoreCode = ():void => {
     setIsReceived(true);
-    if (prevCode) {
+    if (prevCode !== undefined) {
       setCode(prevCode);
     }
     setPrevCode(undefined);
@@ -150,11 +152,16 @@ const RoomPage = () => {
 
   }
 
+  useEffect(() => {
+    console.log(prevCode);
+  },[prevCode])
+
 
   // 페이지 로드 시 방 정보, 
   const pageOnload = async() => {
     // 방 정보
     const roomInfoResponse:AxiosResponse = await axi.get(`room/${params.roomId}`);
+    console.log(roomInfoResponse);
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
     // 소켓 연결
     sock.current.connect(['code', 'snapshot'],[updateCode, getNewSnapshot]);
@@ -195,14 +202,6 @@ const RoomPage = () => {
 
   },[])
 
-  const updateSnapshots = async ():Promise<void> => {    
-    const response:AxiosResponse = await axi.get(`room/${params.roomId}/snapshot/${year}/${month}/${date}`);
-    const dailySnapshots:CodeSnapshot[] = response.data.map((el:any) => CodeSnapshot.fromJson(el));
-    setSnapshots((prevData) => {
-      const nextState = prevData.setIn([stringYear, stringMonth, stringDate], dailySnapshots);
-      return nextState;
-  });
-  }
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
   const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>);
 
@@ -212,7 +211,6 @@ const RoomPage = () => {
       setRoomMounted(true);
     }
     else {
-      updateSnapshots(); // 비동기 함수 호출
       setCode(roomInfo.getContent());
     }
   }, [roomInfo]);

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, } from "react"
 
-const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconClicked:Function, snapshotTitle:string, setSnapshotTitle:Dispatch<SetStateAction<string>> }) => {
+const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconClicked:(e:React.MouseEvent) => void, snapshotTitle:string, setSnapshotTitle:Dispatch<SetStateAction<string>> }) => {
   const updateSnapshotTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
     setSnapshotTitle(e.target.value);
   }

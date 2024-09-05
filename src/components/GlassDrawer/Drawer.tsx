@@ -2,13 +2,13 @@ import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from
 import "./Drawer.css"
 import 'material-icons/iconfont/material-icons.css';
 
-export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, prevCode, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, prevCode:string|undefined , restoreCode:(e:React.MouseEvent<HTMLSpanElement, MouseEvent>) => void}) {
+export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, prevCode, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, prevCode:string|undefined , restoreCode:() => void}) {
   const [isCopied, setCopied] = useState<boolean>(false);
   const closeDrawer = ():void => {
     setOpen(false);
   }
 
-  let timer = useRef<number|undefined>();
+  const timer = useRef<number|undefined>();
 
   const debounceSave = () => {
     if (timer.current) {
@@ -49,7 +49,7 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
             :
             <span
             className="material-icons text-white hover:cursor-pointer"
-            onClick={restoreCode}
+            onClick={() => {restoreCode()}}
             >restore
             </span>
           }

@@ -52,7 +52,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedY
         } else {
             setSnapshots((prevData) => {
                 const nextState = Map(prevData);
-                for (let day of monthlySnapshots) {
+                for (const day of monthlySnapshots) {
                     nextState.setIn([selectedDay.toString(), selectedMonth.toString(), day.toString()], []);
                 }
                 return nextState;

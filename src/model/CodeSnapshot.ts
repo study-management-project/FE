@@ -1,5 +1,3 @@
-import { AxiosResponse } from "axios";
-
 export class CodeSnapshot {
   private title:string;
   private content:string;
@@ -31,7 +29,7 @@ export class CodeSnapshot {
     this.createdAt = new Date().toString();
   }
 
-  static fromJson(json:Object):CodeSnapshot {
+  static fromJson(json:any):CodeSnapshot {
     return new CodeSnapshot(
       json.title,
       json.content,
