@@ -23,10 +23,10 @@ export class Comment {
     this.createdAt = new Date().toString(); 
   }
 
-  static fromJson(json:Map<string,any>):Comment {
+  static fromJson(json:any):Comment {
     return new Comment(
-      json.get("description"),
-      json.get("createdAt")
+      json["description"],
+      json["createdAt"]
     )
   }
 }
