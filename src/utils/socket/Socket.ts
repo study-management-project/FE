@@ -87,6 +87,7 @@ export class Sock {
 
     // 스냅샷 등록
     public sendSnapshot(uuid:string|undefined, snapshot: CodeSnapshot) {
+        console.log(uuid, snapshot);
         this.client?.send(
             "/share-snapshot",
             {},
