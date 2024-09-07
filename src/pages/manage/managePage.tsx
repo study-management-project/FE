@@ -16,7 +16,7 @@ const ManagePage = () => {
   }
 
   const goToRoom = (roomUuid:string):void => {
-    navigator(`room/${roomUuid}`);
+    navigator(`/room/${roomUuid}`);
   }
 
   useEffect(() => {
