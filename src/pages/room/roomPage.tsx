@@ -147,21 +147,27 @@ const RoomPage = () => {
         jsonMessage.content,
         jsonMessage.createdDate
       )
-      return [lastSnapshot,...prevData]
+      if (prevData) {
+        const snapshotDate:number = new Date(prevData[0].getCreatedAt()).getDate();
+        if (snapshotDate === date) {
+          return [lastSnapshot,...prevData]
+        } else {
+          const newList:CodeSnapshot[] = [lastSnapshot];
+          return newList;
+        }
+      } else {
+        const newList:CodeSnapshot[] = [lastSnapshot];
+        return newList;
+      }
     });
-
   }
 
-  useEffect(() => {
-    console.log(prevCode);
-  },[prevCode])
 
 
   // 페이지 로드 시 방 정보, 
   const pageOnload = async() => {
     // 방 정보
     const roomInfoResponse:AxiosResponse = await axi.get(`room/${params.roomId}`);
-    console.log(roomInfoResponse);
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
     // 소켓 연결
     sock.current.connect(['code', 'snapshot'],[updateCode, getNewSnapshot]);
