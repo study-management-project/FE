@@ -86,11 +86,11 @@ export class Sock {
     }
 
     // 스냅샷 등록
-    public sendSnapshot(snapshot: CodeSnapshot) {
+    public sendSnapshot(uuid:string|undefined, snapshot: CodeSnapshot) {
         this.client?.send(
             "/share-snapshot",
             {},
-            JSON.stringify({ uuid: this.roomId, title:snapshot.getTitle(), content:snapshot.getContent()})
+            JSON.stringify({ uuid: uuid, title:snapshot.getTitle(), content:snapshot.getContent()})
         );
     }
 }

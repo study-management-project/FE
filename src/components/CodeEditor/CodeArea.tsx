@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import './CodeArea.css'
 import HighlightedCode from './HighlightCode';
 
-const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispatch<SetStateAction<string>>, height:number, setHeight:Dispatch<SetStateAction<number>>}):JSX.Element => {
+const CodeArea = ({code, setCode, height, setHeight, prevCode}:{code:string, setCode:Dispatch<SetStateAction<string>>, height:number, setHeight:Dispatch<SetStateAction<number>>, prevCode:string|undefined}):JSX.Element => {
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const lineHeight:number = 24;
   const highlightedCodeRef = useRef<HTMLDivElement | null>(null);
@@ -44,6 +44,14 @@ const CodeArea = ({code, setCode, height, setHeight}:{code:string, setCode:Dispa
       }
     };
   }, [textarea.current]);
+
+  useEffect(() => {
+    if (prevCode) {
+      textarea.current?.setAttribute("disabled", "true");
+    } else {
+      textarea.current?.removeAttribute("disabled");
+    }
+  },[prevCode])
 
 
   return (
