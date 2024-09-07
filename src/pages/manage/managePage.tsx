@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios"
 import { useEffect, useState } from "react"
 import axi from "../../utils/axios/Axios";
 import { RoomInfo } from "../../model/RoomInfo";
-import Sidebar from "../../components/SideBar";
+import Sidebar from "../../components/Sidebar";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
 
