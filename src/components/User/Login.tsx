@@ -25,6 +25,9 @@ const Login = () => {
         try {
             const response: AxiosResponse = await axi.post("/login", JSON.stringify(data));
             console.log(response);
+            if (response.status === 200) {
+                navigate('/manage');
+            }
         } catch (error) {
             alert('아이디 혹은 패스워드가 다릅니다.');
             console.error("Login failed:", error);

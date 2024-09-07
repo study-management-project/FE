@@ -1,43 +1,67 @@
-import { AxiosResponse } from "axios";
-import { CodeSnapshot } from "./CodeSnapshot";
-
 export class RoomInfo {
-    private uuid: string;
+    private id?:number;
+    private uuid?: string;
     private name:string;
     private description:string;
-    private content:string;
-    private snapshotList:CodeSnapshot[];
-    private commentList:string[];
-    private haveSnapshotDate:number[];
+    private content?:string;
 
-    public constructor(uuid:string, name:string, description: string, content:string, snapshotList:CodeSnapshot[], commentList:string[], haveSnapshotDate: number[]) {
-        this.uuid = uuid,
-        this.name = name,
-        this.description = description,
-        this.content = content,
-        this.snapshotList = snapshotList,
-        this.commentList = commentList,
-        this.haveSnapshotDate = haveSnapshotDate
+    public constructor(name:string, description: string, content?:string,
+        id?:number, uuid?:string
+    ) {
+        this.name = name;
+        this.description = description;
+        this.content = content;
+        this.id = id;
+        this.uuid = uuid;
     }
 
     static fromJson(data:any) {
-        const snapshotList:CodeSnapshot[] = data.snapshotList.map((snapshot:any) => CodeSnapshot.fromJson(snapshot));
         return new RoomInfo(
-            data.checkUpDTO.uuid,
             data.name,
             data.description,
-            data.content,
-            snapshotList,
-            data.commentList,
-            data.haveSnapshotDate
+            data.content
         )
     }
 
-    public getHaveSnapshotDate():number[] {
-        return this.haveSnapshotDate;
+    static fromListJson(data:any) {
+        return new RoomInfo(
+            data.name,
+            data.description,
+            undefined,
+            data.id,
+            data.uuid
+        )
+    }
+
+    public getId():number {
+        if (this.id) {
+            return this.id;
+        } else {
+            return -1;
+        }
     }
 
     public getContent():string {
-        return this.content;
+        if (this.content) {
+            return this.content;
+        } else {
+            return "";
+        }
+    }
+
+    public getUuid():string {
+        if (this.uuid) {
+            return this.uuid;
+        } else {
+            return "";
+        }
+    }
+
+    public getName():string {
+        return this.name;
+    }
+
+    public getDescription():string {
+        return this.description;
     }
 }

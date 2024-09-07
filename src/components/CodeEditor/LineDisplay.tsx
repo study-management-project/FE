@@ -6,7 +6,7 @@ const LineDisplay = ({textareaHeight}:{textareaHeight:number}):JSX.Element => {
 
   // textarea 높이에 따른
   const createLines = (length:number):Array<number> => {
-    return Array.from({length:length}, (v,i) => i+1);
+    return Array.from({length:length}, (_v,i) => i+1);
   }
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const LineDisplay = ({textareaHeight}:{textareaHeight:number}):JSX.Element => {
       height:`${textareaHeight*1.5}rem`
     }}
     >
-      {lines.map(line => <div className='text-center text-white'>{line}</div>)}
+      {lines.map(line => <div key={line} className='text-center text-white'>{line}</div>)}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import LineDisplay from './LineDisplay'
 import CodeArea from './CodeArea';
 
@@ -16,4 +16,4 @@ const CodeEditor = ({code, setCode}:{code:string, setCode:Dispatch<SetStateActio
   )
 }
 
-export default CodeEditor
+export default CodeEditor;

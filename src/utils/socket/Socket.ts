@@ -2,14 +2,14 @@ import { CompatClient, IMessage, Stomp, StompSubscription } from "@stomp/stompjs
 import axi from "../axios/Axios";
 import { AxiosResponse } from "axios";
 import SockJS from "sockjs-client";
-import { Dispatch, SetStateAction } from "react";
+import { CodeSnapshot } from "../../model/CodeSnapshot";
 
 
 export class Sock {
     private client: CompatClient | undefined;
     private roomId: string | undefined;
     private subscriptions: StompSubscription[] = [];
-    private instance: any;
+    private instance;
 
     private constructor() {
         this.instance = new SockJS(import.meta.env.VITE_SERVER_URL + 'ws');
@@ -86,11 +86,11 @@ export class Sock {
     }
 
     // 스냅샷 등록
-    public sendSnapshot(comment: string) {
+    public sendSnapshot(snapshot: CodeSnapshot) {
         this.client?.send(
             "/share-snapshot",
             {},
-            JSON.stringify({ uuid: this.roomId, content: comment })
+            JSON.stringify({ uuid: this.roomId, title:snapshot.getTitle(), content:snapshot.getContent()})
         );
     }
 }
