@@ -25,14 +25,4 @@ export class CodeSnapshotRepository {
     )
   }
 
-  // 스냅샷 하나
-  getSnapshot:() => Promise<CodeSnapshot> = async() => {
-    const response:AxiosResponse = await axi.get('snapshot');
-    return response.data;
-  }
-  
-  // 스냅샷 저장
-  saveSnapshot:(data:CodeSnapshot) => Promise<AxiosResponse<any,any>> = async(data:CodeSnapshot) => {
-    return await axi.post('snapshots', JSON.stringify(data));
-  }
 }
