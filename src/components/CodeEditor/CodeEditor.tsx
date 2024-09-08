@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import LineDisplay from './LineDisplay'
 import CodeArea from './CodeArea';
 
-const CodeEditor = ({code, setCode}:{code:string, setCode:Dispatch<SetStateAction<string>>}) => {
+const CodeEditor = ({code, setCode, prevCode}:{code:string, setCode:Dispatch<SetStateAction<string>>, prevCode:string|undefined}) => {
   // textarea 내용
 
   // textarea 높이
@@ -11,7 +11,7 @@ const CodeEditor = ({code, setCode}:{code:string, setCode:Dispatch<SetStateActio
   return (
     <div className='flex relative'>
       <LineDisplay textareaHeight={textareaHeight} />
-      <CodeArea code={code} setCode={setCode} height={textareaHeight} setHeight={setHeight}/>
+      <CodeArea code={code} setCode={setCode} height={textareaHeight} setHeight={setHeight} prevCode={prevCode}/>
     </div>
   )
 }

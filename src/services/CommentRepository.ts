@@ -1,5 +1,4 @@
 import {  AxiosResponse } from "axios";
-import { CodeSnapshot } from "../model/CodeSnapshot";
 import axi from "../utils/axios/Axios";
 import { Comment } from "../model/Comment";
 

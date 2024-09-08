@@ -1,6 +1,7 @@
+import { Dispatch, SetStateAction } from "react";
 import { RoomInfo } from "../model/RoomInfo";
 
-const Sidebar = ({rooms, goToRoom} : { rooms:RoomInfo[], goToRoom:(roomUid:string) => void }) => {
+const Sidebar = ({rooms, goToRoom, setModal} : { rooms:RoomInfo[], goToRoom:(roomUid:string) => void, setModal:Dispatch<SetStateAction<boolean>> }) => {
 
   return (
     <div className="bg-[#282C34] text-white h-screen min-w-56 w-2/12 border-solid border-r-2 border-gray-500 ">
@@ -24,7 +25,7 @@ const Sidebar = ({rooms, goToRoom} : { rooms:RoomInfo[], goToRoom:(roomUid:strin
             </div>
         </div>
     <div className="text-white text-xl font-bold p-4">클래스룸</div>
-      <ul>
+      <ul className="max-w-screen-md pl-2 pr-2">
         {rooms?.map((room:RoomInfo) => (
           <div key={room.getId()} className="mb-2">
             <div 
@@ -36,6 +37,13 @@ const Sidebar = ({rooms, goToRoom} : { rooms:RoomInfo[], goToRoom:(roomUid:strin
           </div>
         ))}
       </ul>
+      <div 
+      className="pl-2 pr-2 hover:bg-gray-700 rounded cursor-pointer align-middle"
+      onClick={() => {setModal(true)}}
+      >
+        <span className="material-icons w-8 h-8 align-bottom">add</span>
+        <span className="leading-10">새로운 방 추가</span>
+      </div>
     </div>
   );
 };

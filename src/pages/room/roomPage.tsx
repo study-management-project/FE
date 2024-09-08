@@ -20,7 +20,7 @@ const RoomPage = () => {
   // 처음 표시되어야할 코드를 표시할 때 메세지 송신 방지용 flag
   const [isInitial, setInitial] =useState<boolean>(true); 
   // 내가 받은 것인지, 남에게서 받은 것인지 판별
-  const [isReceived, setIsReceived] = useState<boolean>(true);
+  const [isReceived, setIsReceived] = useState<boolean>(false);
   // 파라미터
   const params:Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();;
   // 디바운싱 timer
@@ -70,7 +70,7 @@ const RoomPage = () => {
 
   const saveSnapshot = ():void => {
     const savedSnapshot:CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString())
-    sock.current.sendSnapshot(savedSnapshot);
+    sock.current.sendSnapshot(params.roomId, savedSnapshot);
   }
 
   // 아이콘이 클릭 되었을 때 동작
@@ -147,21 +147,27 @@ const RoomPage = () => {
         jsonMessage.content,
         jsonMessage.createdDate
       )
-      return [lastSnapshot,...prevData]
+      if (prevData) {
+        const snapshotDate:number = new Date(prevData[0].getCreatedAt()).getDate();
+        if (snapshotDate === date) {
+          return [lastSnapshot,...prevData]
+        } else {
+          const newList:CodeSnapshot[] = [lastSnapshot];
+          return newList;
+        }
+      } else {
+        const newList:CodeSnapshot[] = [lastSnapshot];
+        return newList;
+      }
     });
-
   }
 
-  useEffect(() => {
-    console.log(prevCode);
-  },[prevCode])
 
 
   // 페이지 로드 시 방 정보, 
   const pageOnload = async() => {
     // 방 정보
     const roomInfoResponse:AxiosResponse = await axi.get(`room/${params.roomId}`);
-    console.log(roomInfoResponse);
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
     // 소켓 연결
     sock.current.connect(['code', 'snapshot'],[updateCode, getNewSnapshot]);
@@ -178,9 +184,7 @@ const RoomPage = () => {
     // Sock.subscribe('comment'
     //   , addComment
     // );
-    // Sock.subscribe('snapshot'
-    //   , addSnapshot
-    // );
+
     // Sock.subscribe('checkup');
     // 교사용 추가 예정
   }
@@ -273,7 +277,7 @@ const RoomPage = () => {
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
       <RoomHeader onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
       <div className='relative min-h-lvh' onClick={focus}>
-        <CodeEditor code={code} setCode={setCode}/>
+        <CodeEditor code={code} setCode={setCode} prevCode={prevCode}/>
         <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} prevCode={prevCode} restoreCode={restoreCode}/>
       </div>
     </div>
