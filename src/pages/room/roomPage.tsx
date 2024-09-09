@@ -7,7 +7,7 @@ import { Comment } from '../../model/Comment';
 import Drawer from '../../components/GlassDrawer/Drawer';
 import RoomHeader from '../../components/RoomHeader';
 import CodeEditor from '../../components/CodeEditor/CodeEditor';
-import CheckUp from './checkUp/checkUp';
+import CheckUp from './checkUp/CheckUp';
 
 const RoomPage = () => {
   const params: Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();
