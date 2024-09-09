@@ -8,12 +8,15 @@ import Drawer from '../../components/GlassDrawer/Drawer';
 import RoomHeader from '../../components/RoomHeader';
 import CodeEditor from '../../components/CodeEditor/CodeEditor';
 import CheckUp from './checkUp/CheckUp';
+import QuestionChat from './questionChat/QuestionChat';
 
 const RoomPage = () => {
   const params: Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();
 
   const [snapshots, setSnapshots] = useState<CodeSnapshot[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [questions, setQuestions] = useState<string[]>([]); // 질문 목록 상태 추가
+
 
   const month = useRef<number>(new Date().getMonth());
   const commentPage = useRef<number>(0);
@@ -37,13 +40,23 @@ const RoomPage = () => {
       setDrawerChildren(<div>{/* 코드 스냅샷 관련 내용을 여기에 추가 */}</div>);
     } else if (type === 'checkUp') {
       setDrawerTitle('Q&A');
-      setDrawerChildren(<CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />);
+      setDrawerChildren(
+        <>
+          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />
+          <QuestionChat questions={questions} onSubmit={handleQuestionSubmit} />
+        </>
+      );
     }
   };
 
   const handleCheckUpSubmit = (title: string) => {
     console.log(`Q&A 내용: ${title}`);
     setDrawerTitle('Q&A 진행 중');
+  };
+
+  const handleQuestionSubmit = (question: string) => {
+    setQuestions([...questions, question]); // 새로운 질문 추가
+    console.log(`질문 제출: ${question}`);
   };
 
   return (
