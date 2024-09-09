@@ -19,7 +19,7 @@ const CheckUpVoteButton = ({ onVote }: CheckUpVoteButtonsProps) => {
             <button
                 onClick={() => handleClick('아직이요')}
                 disabled={disabled}
-                className={`p-2 rounded ${disabled ? 'bg-gray-400' : 'bg-blue-200'} ${clickedVote === '아직이요' ? 'text-white' : 'text-blue-600'}`}
+                className={`p-2 rounded ${disabled ? 'bg-gray-400' : 'bg-blue-200'} ${clickedVote === '아직이요' ? 'text-white' : clickedVote === '이해했어요' ? 'text-white' : 'text-blue-600'}`}
             >
                 아직이요
             </button>
@@ -27,7 +27,7 @@ const CheckUpVoteButton = ({ onVote }: CheckUpVoteButtonsProps) => {
             <button
                 onClick={() => handleClick('이해했어요')}
                 disabled={disabled}
-                className={`p-2 rounded ${disabled ? 'bg-gray-400' : 'bg-blue-600'} ${clickedVote === '이해했어요' ? 'text-white' : 'text-white'}`}
+                className={`p-2 rounded ${disabled ? 'bg-gray-400' : 'bg-blue-600'} ${clickedVote === '이해했어요' ? 'text-white' : clickedVote === '아직이요' ? 'text-white' : 'text-white'}`}
             >
                 이해했어요
             </button>
