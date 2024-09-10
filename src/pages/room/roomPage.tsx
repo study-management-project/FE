@@ -39,7 +39,7 @@ const RoomPage = () => {
 
   // const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
-  const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2? month : "0"+month}-${date.toString.length == 2 ? date : "0"+date}`);
+  const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2? month : "0"+month}-${date.toString().length == 2 ? date : "0"+date}`);
 
   // 방 정보
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("","",""));
