@@ -11,44 +11,46 @@ import axi from '../../utils/axios/Axios';
 import CodeSnapshotUI from '../../components/CodeSnapshot/CodeSnapshotUI';
 import { IMessage } from '@stomp/stompjs';
 import { Map } from 'immutable';
+import CheckUp from './checkUp/CheckUp';
+import QuestionChat from './questionChat/QuestionChat';
 
 
 const RoomPage = () => {
   // 마운트 시 useEffect 실행 방지
-  const [isMounted,setMounted] = useState<boolean>(false);
+  const [isMounted, setMounted] = useState<boolean>(false);
   const [roomMounted, setRoomMounted] = useState<boolean>(false);
   // 처음 표시되어야할 코드를 표시할 때 메세지 송신 방지용 flag
-  const [isInitial, setInitial] =useState<boolean>(true); 
+  const [isInitial, setInitial] = useState<boolean>(true);
   // 내가 받은 것인지, 남에게서 받은 것인지 판별
   const [isReceived, setIsReceived] = useState<boolean>(false);
   // 파라미터
-  const params:Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();;
+  const params: Readonly<Partial<{ roomId: string; }>> = useParams<{ roomId: string }>();;
   // 디바운싱 timer
-  const timer:React.MutableRefObject<ReturnType<typeof setTimeout>|undefined> = useRef(undefined);
+  const timer: React.MutableRefObject<ReturnType<typeof setTimeout> | undefined> = useRef(undefined);
   // 날짜
   const todayDate = useRef<Date>(new Date());
-  const year:number = todayDate.current.getFullYear();
-  const month:number = todayDate.current.getMonth()+1;
-  const date:number = todayDate.current.getDate();
-  const stringYear:string = year.toString();
-  const stringMonth:string = month.toString();
-  const stringDate:string = date.toString();
+  const year: number = todayDate.current.getFullYear();
+  const month: number = todayDate.current.getMonth() + 1;
+  const date: number = todayDate.current.getDate();
+  const stringYear: string = year.toString();
+  const stringMonth: string = month.toString();
+  const stringDate: string = date.toString();
 
   // textarea disabled (유저 권한에 따름)
   // const [disabled, setDisabled] = useState<boolean>(true);
 
   // const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
-  const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2? month : "0"+month}-${date.toString().length == 2 ? date : "0"+date}`);
+  const [snapshotTitle, setSnapshotTitle] = useState<string>(`${year}-${month.toString().length == 2 ? month : "0" + month}-${date.toString().length == 2 ? date : "0" + date}`);
 
   // 방 정보
-  const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("","",""));
+  const [roomInfo, setRoomInfo] = useState<RoomInfo>(new RoomInfo("", "", ""));
   // 코드
-  const [code, setCode] = useState<string>(""); 
+  const [code, setCode] = useState<string>("");
   // 코드 스냅샷 확인 후 되돌리기 위해 이전 코드를 저장
-  const [prevCode, setPrevCode] = useState<string|undefined>(undefined);
+  const [prevCode, setPrevCode] = useState<string | undefined>(undefined);
   // 스냅샷들 (년:월:일:[])
-  const initialSnapshots:Map<string, Map<string, Map<string, any>>> = Map([
+  const initialSnapshots: Map<string, Map<string, Map<string, any>>> = Map([
     [stringYear, Map([
       [stringMonth, Map([
         [stringDate, []]
@@ -59,33 +61,43 @@ const RoomPage = () => {
   const [snapshots, setSnapshots] = useState<Map<string, Map<string, Map<string, any>>>>(initialSnapshots);
   // 선택된 날짜에 존재하는 코드 스냅샷들
   const [dailySanpshots, setDailySnapshots] = useState<CodeSnapshot[]>([]);
+
   // 코멘트들
-  // const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  // 질문 목록 상태 추가
+  const [questions, setQuestions] = useState<string[]>([]);
+
   // 소켓 객체
   const sock = useRef<Sock>(Sock.createInstance());
-  
+
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
-  
 
-  const saveSnapshot = ():void => {
-    const savedSnapshot:CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString())
+  const saveSnapshot = (): void => {
+    const savedSnapshot: CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString())
     sock.current.sendSnapshot(params.roomId, savedSnapshot);
   }
 
   // 아이콘이 클릭 되었을 때 동작
-  const onIconClicked = (event:React.MouseEvent) => {
-    const clickedTitle:string|null = event.currentTarget.id;
+  const onIconClicked = (event: React.MouseEvent) => {
+    const clickedTitle: string | null = event.currentTarget.id;
     if (clickedTitle) {
       setDrawerTitle((prevData) => {
         if (prevData === clickedTitle) {
           setOpen(!open);
         } else {
           if (clickedTitle === "이해도 조사") {
-            setDrawerChildren(<div>이해도 조사</div>)
+            // 이해도 조사와 질문 채팅 UI 추가
+            setDrawerChildren(
+              <div className='flex flex-col h-full'>
+                <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />
+                <QuestionChat questions={questions} onSubmit={handleQuestionSubmit} />
+              </div>
+
+            )
           }
           else {
-            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>);
+            setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode} />);
           }
           setOpen(true);
         }
@@ -94,14 +106,23 @@ const RoomPage = () => {
     }
   }
 
+  const handleCheckUpSubmit = (title: string) => {
+    console.log(`Q&A 내용: ${title}`);
+    setDrawerTitle('Q&A 진행 중');
+  };
 
-  const savePrevCode = ():void => {
+  const handleQuestionSubmit = (question: string) => {
+    setQuestions([...questions, question]); // 새로운 질문 추가
+    console.log(`질문 제출: ${question}`);
+  };
+
+  const savePrevCode = (): void => {
     if (prevCode === undefined) {
       setPrevCode(code);
     }
   }
 
-  const restoreCode = ():void => {
+  const restoreCode = (): void => {
     setIsReceived(true);
     if (prevCode !== undefined) {
       setCode(prevCode);
@@ -109,11 +130,11 @@ const RoomPage = () => {
     setPrevCode(undefined);
     setTimeout(() => {
       setIsReceived(false);
-    },300)
+    }, 300)
   }
 
   // 코드 업데이트 로직
-  const updateCode = async (receivedCode:string) => {
+  const updateCode = async (receivedCode: string) => {
     setIsReceived(true);
     setCode((prev) => {
       if (receivedCode == prev) {
@@ -137,26 +158,26 @@ const RoomPage = () => {
     const response = await axi.get(`room/${params.roomId}/snapshot/${year}/${month}/${date}`);
     const dailySnapshots: number[] = response.data;
     setSnapshots((prevData) => {
-    const nextState = prevData.setIn([stringYear, stringMonth, stringDate], dailySnapshots);
-        return nextState;
+      const nextState = prevData.setIn([stringYear, stringMonth, stringDate], dailySnapshots);
+      return nextState;
     });
     setDailySnapshots((prevData) => {
-      const jsonMessage:any = JSON.parse(message.toString())
-      const lastSnapshot:CodeSnapshot = new CodeSnapshot(
+      const jsonMessage: any = JSON.parse(message.toString())
+      const lastSnapshot: CodeSnapshot = new CodeSnapshot(
         jsonMessage.title,
         jsonMessage.content,
         jsonMessage.createdDate
       )
       if (prevData.length >= 1) {
-        const snapshotDate:number = new Date(prevData[0].getCreatedAt()).getDate();
+        const snapshotDate: number = new Date(prevData[0].getCreatedAt()).getDate();
         if (snapshotDate === date) {
-          return [lastSnapshot,...prevData]
+          return [lastSnapshot, ...prevData]
         } else {
-          const newList:CodeSnapshot[] = [lastSnapshot];
+          const newList: CodeSnapshot[] = [lastSnapshot];
           return newList;
         }
       } else {
-        const newList:CodeSnapshot[] = [lastSnapshot];
+        const newList: CodeSnapshot[] = [lastSnapshot];
         return newList;
       }
     });
@@ -165,20 +186,20 @@ const RoomPage = () => {
 
 
   // 페이지 로드 시 방 정보, 
-  const pageOnload = async() => {
+  const pageOnload = async () => {
     // 방 정보
-    const roomInfoResponse:AxiosResponse = await axi.get(`room/${params.roomId}`);
+    const roomInfoResponse: AxiosResponse = await axi.get(`room/${params.roomId}`);
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
     // 소켓 연결
-    sock.current.connect(['code', 'snapshot'],[updateCode, getNewSnapshot]);
+    sock.current.connect(['code', 'snapshot'], [updateCode, getNewSnapshot]);
     await sock.current.joinRoom(params.roomId);
 
     // 오늘자 스냅샷
-    const dailySnapshotsResponse:AxiosResponse = await axi.get(`room/${params.roomId}/snapshot/${year}/${month}/${date}`);
-    const todayDailySnapshots:CodeSnapshot[] = dailySnapshotsResponse.data.map((el => CodeSnapshot.fromJson(el)));
+    const dailySnapshotsResponse: AxiosResponse = await axi.get(`room/${params.roomId}/snapshot/${year}/${month}/${date}`);
+    const todayDailySnapshots: CodeSnapshot[] = dailySnapshotsResponse.data.map((el => CodeSnapshot.fromJson(el)));
     setSnapshots((prevData) => {
-    const nextState = prevData.setIn([stringYear, stringMonth, stringDate], todayDailySnapshots);
-        return nextState;
+      const nextState = prevData.setIn([stringYear, stringMonth, stringDate], todayDailySnapshots);
+      return nextState;
     });
     setDailySnapshots(todayDailySnapshots);
     // Sock.subscribe('comment'
@@ -204,10 +225,10 @@ const RoomPage = () => {
       });
     }
 
-  },[])
+  }, [])
 
   const [drawerTitle, setDrawerTitle] = useState<string>("코드 스냅샷");
-  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>);
+  const [drawerChildren, setDrawerChildren] = useState<ReactNode>(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode} />);
 
   // 방 정보 받아왔을 때 스냅샷 업데이트
   useEffect(() => {
@@ -223,10 +244,10 @@ const RoomPage = () => {
   // 코드 pub
   useEffect(() => {
     if (!isMounted) {
-      
+
       // 첫 마운트 시에는 아무 동작도 하지 않음
       setMounted(true);
-      return; 
+      return;
     }
 
     if (isInitial) {
@@ -244,7 +265,7 @@ const RoomPage = () => {
     if (timer.current) {
       clearTimeout(timer.current);
     }
-    
+
     timer.current = setTimeout(() => {
       // 코드가 변경된 후에만 송신
       sock.current.sendCode(code);
@@ -260,25 +281,26 @@ const RoomPage = () => {
     };
   }, [code]);
 
-  const focus = ():void => {
-    let textarea:HTMLElement|null = document.getElementById('text-area');
-    if (textarea) {
-      textarea.focus();
-    }
-    textarea = null;
-  }
+  // 이해도 조사(checkUp) 및 질문 채팅창(questionChat) 포커싱 문제 떄문에 우선 주석 처리해두었습니다.
+  // const focus = (): void => {
+  //   let textarea: HTMLElement | null = document.getElementById('text-area');
+  //   if (textarea) {
+  //     textarea.focus();
+  //   }
+  //   textarea = null;
+  // }
 
-  useEffect(()=>{
-    setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>)
-  },[snapshots, dailySanpshots]);
+  useEffect(() => {
+    setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode} />)
+  }, [snapshots, dailySanpshots]);
 
 
   return (
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
-      <RoomHeader onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
+      <RoomHeader onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle} />
       <div className='relative min-h-lvh' onClick={focus}>
-        <CodeEditor code={code} setCode={setCode} prevCode={prevCode}/>
-        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} prevCode={prevCode} restoreCode={restoreCode}/>
+        <CodeEditor code={code} setCode={setCode} prevCode={prevCode} />
+        <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} prevCode={prevCode} restoreCode={restoreCode} />
       </div>
     </div>
   )
