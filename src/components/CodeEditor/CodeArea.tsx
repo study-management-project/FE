@@ -53,15 +53,35 @@ const CodeArea = ({code, setCode, height, setHeight, prevCode}:{code:string, set
     }
   },[prevCode])
 
+  const updateCode = (e:React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key ==="Tab") {
+      e.preventDefault();
+      const {currentTarget}:{currentTarget: EventTarget & HTMLTextAreaElement} = e;
+      const currentCode:string = currentTarget.value;
+      const selectionStart:number = currentTarget.selectionStart;
+      const selectionEnd:number = currentTarget.selectionEnd;
+      const newCode:string = currentCode.substring(0,selectionStart) + "  " + currentCode.substring(selectionEnd);
+      setCode(newCode);
+      setTimeout(() => {
+        currentTarget.setSelectionRange(selectionStart+2, selectionStart+2);
+      },0);
+    } else {
+      const {currentTarget} = e;
+      setTimeout(() => {
+        setCode(currentTarget.value);
+      },0)
+    }
+  }
+
 
   return (
     <>
       <textarea 
-      className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-12 font-light'
+      className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-12 font-light max-w-[calc(100%-3rem)]'
       style={{height:`${height*1.51}rem`, caretColor: 'white'}}
       wrap='off'
       onInput={adjustHeight}
-      onChange={e => setCode(e.target.value)}
+      onKeyDown={updateCode}
       ref={textarea}
       spellCheck='false'
       id='text-area'
