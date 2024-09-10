@@ -15,7 +15,8 @@ const ManagePage = () => {
   
   const getRooms = async():Promise<void> => {
     const response:AxiosResponse = await axi.get('rooms');
-    setRooms(response.data.map((room:unknown) => RoomInfo.fromListJson(room)));
+    const newRooms:RoomInfo[] = response.data.map((room:unknown) => RoomInfo.fromListJson(room)).reverse();
+    setRooms(newRooms);
   }
 
   const goToRoom = (roomUuid:string):void => {
@@ -30,7 +31,7 @@ const ManagePage = () => {
     <>
       <div className="flex w-full">
         {/* Sidebar */}
-        <Sidebar rooms={rooms} goToRoom = {goToRoom} setModal={setModal} />
+        <Sidebar rooms={rooms} goToRoom = {goToRoom} setModal={setModal}/>
 
         <div className="w-full flex flex-col">
           {/* Header */}
@@ -48,7 +49,7 @@ const ManagePage = () => {
           </div>
         </div>
       </div>
-      <GlassModal modalOpen={modalOpen} setModal={setModal} />
+      <GlassModal modalOpen={modalOpen} setModal={setModal} getRooms={getRooms}/>
     </>
     
   );

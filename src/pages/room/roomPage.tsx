@@ -147,7 +147,7 @@ const RoomPage = () => {
         jsonMessage.content,
         jsonMessage.createdDate
       )
-      if (prevData) {
+      if (prevData.length >= 1) {
         const snapshotDate:number = new Date(prevData[0].getCreatedAt()).getDate();
         if (snapshotDate === date) {
           return [lastSnapshot,...prevData]
