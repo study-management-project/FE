@@ -2,12 +2,14 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { Dispatch, SetStateAction, useState } from 'react'
 import axi from '../utils/axios/Axios';
 
-export const GlassModal = ({modalOpen, setModal} : {modalOpen:boolean, setModal:Dispatch<SetStateAction<boolean>>}) => {
+export const GlassModal = ({modalOpen, setModal, getRooms} : {modalOpen:boolean, setModal:Dispatch<SetStateAction<boolean>>, getRooms:() =>Promise<void>}) => {
     const [roomName, setRoomName] = useState<string>("");
     const [roomDesc, setRoomDesc] = useState<string>("");
 
     const postRoom = async() => {
         await axi.post("room", {name: roomName, description: roomDesc});
+        setModal(false);
+        await getRooms();
     }
 
   return (
@@ -27,10 +29,7 @@ export const GlassModal = ({modalOpen, setModal} : {modalOpen:boolean, setModal:
             <div className="flex justify-end gap-4">
               <button
               className='h-10 leading-8 px-3 py-1 bg-[#17A1FA] bg-opacity-75 align-middle font-bold rounded-md' 
-              onClick={() => {
-                postRoom();
-                setModal(false);
-              }
+              onClick={() => {postRoom()}
               }>방 추가</button>
               <button onClick={() => setModal(false)}>취소</button>
             </div>
