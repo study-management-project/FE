@@ -1,28 +1,33 @@
-import hljs, { AutoHighlightResult } from 'highlight.js';
-import DOMPurify from 'dompurify';
-import { useEffect, useState } from 'react';
-import 'highlight.js/styles/atom-one-dark.css';
-import './HighlightCode.css';
+// import { useEffect, useState } from 'react';
+// import { Map } from "immutable";
+// import HighlightedCodeLine from './HighligtCodeLine';
 
 
+// const HighlightedCode = ({ code }: { code : string }) => {
+//   const [codeLines,setCodelines] = useState<Map<string, string>>(Map());
 
-const HighlightedCode = ({ code}: { code: string }) => {
-    const [displayValue, setValue] = useState<string>("");
-    const [language, setLang] = useState<string|undefined>(undefined);
+//   useEffect(() => {
+//     const newMap:Map<string,string> = Map();
+//     console.log(code.split("\n"));
+//     code.split("\n").forEach((value:string, index:number) => {
+//       console.log(index, value);
+//       newMap.set(`${index}`,value);
+//     });
+//     console.log(newMap.keys());
+//     setCodelines(newMap);
+//   },[code])
 
-    useEffect(() => {
-        const { value: highlightedCode, language }:AutoHighlightResult = hljs.highlightAuto(code);
-        setValue(highlightedCode);
-        setLang(language);
-    },[code])
+//   useEffect(() => {
+//     console.log(codeLines);
+//   },[codeLines])
 
-  return (
-    <pre>
-      <code 
-      className={language} 
-      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(displayValue, {ALLOWED_TAGS: ["span"]}) }} />
-    </pre>
-  );
-};
+//   return (
+//     <>
+//      {codeLines.map((codeLine:string, key:string) => {
+//       return <HighlightedCodeLine codeLine={codeLine} key={key} />
+//      })} 
+//     </>
+//   );
+// };
 
-export default HighlightedCode;
+// export default HighlightedCode;
