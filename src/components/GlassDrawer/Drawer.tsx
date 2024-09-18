@@ -37,6 +37,8 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
           (isOpen ? " translate-x-0" : " translate-x-full")
         }
         style={{transitionProperty: "transform"}}
+        // input focus 동작 방지
+        onClick={(e:React.MouseEvent) => e.stopPropagation()}
       >
         <div className="absolute -translate-x-28 mt-4">
           {

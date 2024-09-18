@@ -34,8 +34,8 @@ const RoomPage = () => {
   const stringMonth:string = month.toString();
   const stringDate:string = date.toString();
 
-  // textarea disabled (유저 권한에 따름)
-  // const [disabled, setDisabled] = useState<boolean>(true);
+  // textarea ref
+  const textArea = useRef<HTMLInputElement>(null);
 
   // const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
@@ -260,12 +260,9 @@ const RoomPage = () => {
     };
   }, [code]);
 
-  const focus = ():void => {
-    let textarea:HTMLElement|null = document.getElementById('text-area');
-    if (textarea) {
-      textarea.focus();
-    }
-    textarea = null;
+  const focus = (e:React.MouseEvent):void => {
+    textArea.current?.focus();
+    console.log('포커스 실행');
   }
 
   useEffect(()=>{
@@ -277,7 +274,7 @@ const RoomPage = () => {
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
       <RoomHeader onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
       <div className='relative min-h-lvh' onClick={focus}>
-        <CodeEditor code={code} setCode={setCode} prevCode={prevCode}/>
+        <CodeEditor code={code} setCode={setCode} prevCode={prevCode} textArea={textArea}/>
         <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} prevCode={prevCode} restoreCode={restoreCode}/>
       </div>
     </div>
