@@ -252,7 +252,7 @@ const RoomPage = () => {
       // 송신 후 잠시 후에 isReceived를 false로 리셋
       setTimeout(() => {
         setIsReceived(false);
-      }, 100); // 100ms 정도 후에 초기화 (이 값은 조정 가능)
+      }, 100);
     }, 500);
 
     return () => {
@@ -260,10 +260,9 @@ const RoomPage = () => {
     };
   }, [code]);
 
-  const focus = (e:React.MouseEvent):void => {
-    textArea.current?.focus();
-    console.log('포커스 실행');
-  }
+  // const focus = (e:React.MouseEvent):void => {
+  //   textArea.current?.focus();
+  // }
 
   useEffect(()=>{
     setDrawerChildren(<CodeSnapshotUI year={year} month={month} snapshots={snapshots} setIsReceived={setIsReceived} setCode={setCode} setSnapshots={setSnapshots} roomId={params.roomId} dailySnapshots={dailySanpshots} setDailySnapshots={setDailySnapshots} savePrevCode={savePrevCode}/>)
