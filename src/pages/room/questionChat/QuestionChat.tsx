@@ -13,7 +13,7 @@ const QuestionChat = () => {
     }
   };
 
-  // textare 자동 높이 조절을 위한 useEffect
+  // textarea 자동 높이 조절을 위한 useEffect
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -22,31 +22,19 @@ const QuestionChat = () => {
   }, [question]);
 
   return (
-    <div
-      className="bg-white p-5 rounded shadow-md"
-      style={{ fontFamily: "Noto Sans", fontSize: "1rem" }}
-    >
-      <h3 className="font-bold mb-4" style={{ fontSize: "1rem" }}>
-        질문 채팅방
-      </h3>
+    <div className="bg-white p-5 rounded shadow-md font-noto text-base">
+      <p className="font-bold mb-4">질문 채팅방</p>
 
       {/* 제출된 질문 리스트 출력 */}
-      <div
-        className="mb-4 h-64 overflow-y-auto border border-gray-300 p-2 rounded bg-gray-50"
-        style={{ fontSize: "0.875rem" }}
-      >
+      <div className="mb-4 h-64 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm">
         {questions.length > 0 ? (
           questions.map((q, index) => (
-            <div
-              key={index}
-              className="p-2 mb-2 bg-gray-100 rounded max-w-lg"
-              style={{ width: "100%" }}
-            >
+            <div key={index} className="p-2 mb-2 bg-gray-100 rounded max-w-lg">
               {index + 1}. {q} {/* 질문을 리스트 형식으로 출력 */}
             </div>
           ))
         ) : (
-          <p>아직 질문이 없습니다.</p>
+          <p className="text-gray-400">아직 질문이 없습니다.</p>
         )}
       </div>
 
@@ -54,12 +42,7 @@ const QuestionChat = () => {
         ref={textareaRef}
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded"
-        style={{
-          resize: "none",
-          fontFamily: "Noto Sans",
-          fontSize: "0.875rem",
-        }}
+        className="w-full p-2 border border-gray-300 rounded resize-none font-noto text-sm"
         placeholder="궁금한 점은 여기에 질문해 보세요!"
         rows={4}
       />
@@ -67,8 +50,7 @@ const QuestionChat = () => {
         <button
           type="button"
           onClick={handleQuestionSubmit}
-          className="mt-2 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded transition duration-200"
-          style={{ fontSize: "0.75rem" }}
+          className="mt-2 text-xs bg-blue-500 hover:bg-blue-600 text-white p-2 rounded transition duration-200"
         >
           질문 제출
         </button>
@@ -78,4 +60,3 @@ const QuestionChat = () => {
 };
 
 export default QuestionChat;
-7;
