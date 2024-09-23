@@ -1,8 +1,15 @@
 import { Dispatch, SetStateAction, } from "react"
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconClicked:(e:React.MouseEvent) => void, snapshotTitle:string, setSnapshotTitle:Dispatch<SetStateAction<string>> }) => {
+  const navigate:NavigateFunction = useNavigate();
+
   const updateSnapshotTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
     setSnapshotTitle(e.target.value);
+  }
+
+  const goToSignIn = () => {
+    navigate("/");
   }
 
 
@@ -22,6 +29,12 @@ const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconCl
             </div>
           </div>
           <div className="h-full flex items-center mr-5">
+            <div className="text-white h-full flex justify-center items-center mr-2">
+              <span 
+                className="material-icons select-none cursor-pointer"
+                onClick={goToSignIn}
+                >account_box</span>
+            </div>
             <div className=''>
               <div onClick={onIconClicked} className="cursor-pointer mr-2" id="이해도 조사">
                 <img src="/icons/iconCheckUp.png" alt="Check Up" className="w-[23px] h-[23px]" />
