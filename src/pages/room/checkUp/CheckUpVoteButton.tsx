@@ -15,11 +15,12 @@ const CheckUpVoteButton = ({ onVote }: CheckUpVoteButtonsProps) => {
     };
 
     return (
-        <div className="flex justify-center mt-4 space-x-2">
+        <div className="flex justify-center space-x-2">
             <button
                 onClick={() => handleClick('아직이요')}
                 disabled={disabled}
                 className={`p-2 rounded ${disabled ? 'bg-gray-400' : 'bg-blue-200'} ${clickedVote === '아직이요' ? 'text-white' : clickedVote === '이해했어요' ? 'text-white' : 'text-blue-600'}`}
+                style={{ fontFamily: 'Noto Sans', fontSize: '0.75rem', paddingLeft: '10px', resize: 'none' }}
             >
                 아직이요
             </button>
@@ -28,6 +29,7 @@ const CheckUpVoteButton = ({ onVote }: CheckUpVoteButtonsProps) => {
                 onClick={() => handleClick('이해했어요')}
                 disabled={disabled}
                 className={`p-2 rounded ${disabled ? 'bg-gray-400' : 'bg-blue-600'} ${clickedVote === '이해했어요' ? 'text-white' : clickedVote === '아직이요' ? 'text-white' : 'text-white'}`}
+                style={{ fontFamily: 'Noto Sans', fontSize: '0.75rem' }}
             >
                 이해했어요
             </button>

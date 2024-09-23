@@ -24,10 +24,10 @@ export class Sock {
     }
 
     // 소켓 연결
-    public connect = (topics: string[], actions: Function[]):void => {
+    public connect = (topics: string[], actions: Function[]): void => {
         this.client = Stomp.over(new SockJS(import.meta.env.VITE_SERVER_URL + 'ws'));
         this.client.connect({}, () => {
-            for (let i=0; i<topics.length; i++) {
+            for (let i = 0; i < topics.length; i++) {
                 this.subscribe(topics[i], actions[i]);
             }
         });
@@ -51,7 +51,7 @@ export class Sock {
             if (this.client.connected) {
                 const subscription: StompSubscription = this.client.subscribe(
                     "/topic/" + this.roomId + "/" + topic,
-                    (message:IMessage) => {
+                    (message: IMessage) => {
                         action(message.body);
                     });
                 this.subscriptions.push(subscription);
@@ -68,7 +68,7 @@ export class Sock {
     }
 
     // 코드 공유
-    public sendCode(code: string):void {
+    public sendCode(code: string): void {
         this.client?.send(
             "/share-code",
             {},
@@ -86,11 +86,11 @@ export class Sock {
     }
 
     // 스냅샷 등록
-    public sendSnapshot(uuid:string|undefined, snapshot: CodeSnapshot) {
+    public sendSnapshot(uuid: string | undefined, snapshot: CodeSnapshot) {
         this.client?.send(
             "/share-snapshot",
             {},
-            JSON.stringify({ uuid: uuid, title:snapshot.getTitle(), content:snapshot.getContent()})
+            JSON.stringify({ uuid: uuid, title: snapshot.getTitle(), content: snapshot.getContent() })
         );
     }
 }
