@@ -37,6 +37,7 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
           (isOpen ? " translate-x-0" : " translate-x-full")
         }
         style={{transitionProperty: "transform"}}
+        onClick = {(e:React.MouseEvent) => {e.stopPropagation()}}
       >
         <div className="absolute -translate-x-28 mt-4">
           {
@@ -57,25 +58,25 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
            !isCopied 
            ?
             <span 
-              className="material-icons-outlined text-white ml-2 mr-2 hover:cursor-pointer z-20"
+              className="material-icons text-white ml-2 mr-2 cursor-pointer z-20"
               onClick={copyCode}
-            >content_copy
+            >copy_all
             </span>
            : 
             <span 
-              className="material-icons-outlined text-green-400 mr-2 hover:cursor-pointer z-20"
+              className="material-icons-outlined text-green-400 mr-2 cursor-pointer z-20"
               onClick={copyCode}
             >check_circle
             </span>
           }
         <span 
-        className="material-icons-outlined text-white hover:cursor-pointer z-20"
+        className="material-icons text-white cursor-pointer z-20"
         onClick = {debounceSave}
         >save</span>
         </div>
         <article className="relative w-full pb-10 flex flex-col space-y-6 overflow-y-scroll h-full">
           <div className="flex justify-start p-6">
-            <img className="p-1 w-6 h-6 mr-2 cursor-pointer" src="/icons/doubleArrow.png" alt="drawer 닫음 버튼" onClick={closeDrawer}/>
+            <span className="material-icons text-white cursor-pointer">keyboard_double_arrow_right</span>
             <header className="font-bold text-white text-opacity-75"> {title}</header>
           </div>
           <div className="flex justify-center">

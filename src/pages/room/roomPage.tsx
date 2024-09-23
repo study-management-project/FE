@@ -69,8 +69,13 @@ const RoomPage = () => {
   
 
   const saveSnapshot = ():void => {
-    const savedSnapshot:CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString())
+    const savedSnapshot:CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString());
     sock.current.sendSnapshot(params.roomId, savedSnapshot);
+    if (snapshots.getIn([stringYear,stringMonth, stringDate], undefined) === undefined) {
+      setSnapshots((prevSnapshots:Map<string, Map<string, Map<string, any>>>) => {
+        return Map(prevSnapshots.setIn([stringYear,stringMonth,stringDate], []));
+      })
+    }
   }
 
   // 아이콘이 클릭 되었을 때 동작
@@ -277,7 +282,7 @@ const RoomPage = () => {
     <div className='bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto'>
       <RoomHeader onIconClicked={onIconClicked} snapshotTitle={snapshotTitle} setSnapshotTitle={setSnapshotTitle}/>
       <div className='relative min-h-lvh' onClick={focus}>
-        <CodeEditor code={code} setCode={setCode} prevCode={prevCode}/>
+        <CodeEditor code={code} setCode={setCode} prevCode={prevCode} saveSnapshot={saveSnapshot}/>
         <Drawer title={drawerTitle} children={drawerChildren} isOpen={open} setOpen={setOpen} code={code} saveSnapshot={saveSnapshot} prevCode={prevCode} restoreCode={restoreCode}/>
       </div>
     </div>
