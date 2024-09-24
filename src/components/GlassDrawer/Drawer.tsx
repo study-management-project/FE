@@ -105,7 +105,7 @@ export default function Drawer({
         <article className="relative w-full pb-10 flex flex-col space-y-6 overflow-y-scroll h-full">
           <div className="flex justify-start p-6">
             <span className="material-icons text-white cursor-pointer">keyboard_double_arrow_right</span>
-            <header className="font-bold text-white text-opacity-75"> {title}</header>
+            <header className="font-bold text-white"> {title}</header>
           </div>
           <div className="flex justify-center">{children}</div>
         </article>

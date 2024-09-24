@@ -12,16 +12,28 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
     const [formVisible, setFormVisible] = useState<boolean>(true); // 폼 표시 여부 상태
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
+    const handleSubmit = (event?: React.FormEvent) => {
+        if (event) event.preventDefault();
+        if (title.trim() === "") {
+            // title이 비어있다면 함수 종료
+            return;
+        }
         onSubmit(title); // 이해도조사 제목을 RoomPage로 전달
         setSubmittedTitle(title); // 제목 저장
         setFormVisible(false); // 폼 숨기기
         setShowVoteButtons(true); // 투표 버튼 표시
     };
 
+    // Enter 키로 이해도 조사를 시작할 수 있도록 처리
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault(); // 줄바꿈 방지
+            handleSubmit(); // 이해도 조사 시작
+        }
+    }
+
     const handleVote = (vote: "이해했어요" | "아직이요") => {
-        console.log(`사용자가 ${vote}를 선택했습니다.`);
+        console.log(`사용자가 ${vote}를 선택했습니다.`); ``
         setShowVoteButtons(true);
     };
 
@@ -44,6 +56,7 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
                         ref={textareaRef}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         className="mb-4 w-full resize-none rounded border border-gray-300 p-2 font-noto text-sm"
                         placeholder="Q&A 진행할 내용을 입력하세요"
                         rows={2}
