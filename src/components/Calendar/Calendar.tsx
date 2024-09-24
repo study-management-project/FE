@@ -109,6 +109,10 @@ const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedY
         setDailySnapshots([]);
     },[selectedYear, selectedMonth])
 
+    useEffect(() => {
+        getMonthlySnapshots(year, month);
+    },[snapshots])
+
     return (
         <div className="w-[20vw]">
             <div className="mx-auto p-4 bg-transparent text-white text-opacity-50 rounded-lg">
@@ -162,7 +166,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedY
                 </div>
                 <div className="grid grid-cols-7 text-center gap-1">
                     {daysOfWeek.map((day, idx) => (
-                        <div key={idx} className={`font-bold ${day === '토' ? 'text-blue-500 text-opacity-75' : day === '일' ?  'text-red-500 text-opacity-75' : ''}`}>
+                        <div key={idx} className={`font-bold ${day === '토' || day === '일' ? 'text-blue-500 text-opacity-75' : ''}`}>
                             {day}
                         </div>
                     ))}
@@ -172,7 +176,7 @@ const Calendar = ({snapshots, setSnapshots, roomId, setDailySnapshots, selectedY
                                 key={idx}
                                 title={day?.toString()}
                                 className={`h-10 flex-col justify-center rounded-md 
-                                    ${selectedYear === year && selectedMonth === month && day === date ? 'bg-slate-900 opacity-75 text-white' : selectedYear === year && selectedMonth === month && selectedDay==day ? 'bg-green-400 bg-opacity-75 text-white' : 'bg-transparent'} ${day ? (idx % 7 === 0 ? 'text-red-500 text-opacity-75' : idx % 7 === 6 ? 'text-blue-500 text-opacity-75' : '') : ''} ${day && monthlySnapshots.includes(day) ? 'hover:cursor-pointer hover:bg-white hover:bg-opacity-10' : '' }`}
+                                    ${selectedYear === year && selectedMonth === month && day === date ? 'bg-black opacity-75 text-white' : selectedYear === year && selectedMonth === month && selectedDay==day ? 'bg-slate-900 bg-opacity-75 text-white' : 'bg-transparent'} ${day ? (idx % 7 === 0 || idx % 7 === 6 ? 'text-blue-500 text-opacity-75' : '') : ''} ${day && monthlySnapshots.includes(day) ? 'hover:cursor-pointer hover:bg-white hover:bg-opacity-10' : '' }`}
                                 onClick={day && monthlySnapshots.includes(day) ? handleDayChange : undefined}
                             >
                                 <div>{day ? day : ''}</div>

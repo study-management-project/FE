@@ -1,16 +1,60 @@
-import { Dispatch, SetStateAction, } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, } from "react"
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import axi from "../utils/axios/Axios";
+import { AxiosResponse } from "axios";
 
 const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconClicked:(e:React.MouseEvent) => void, snapshotTitle:string, setSnapshotTitle:Dispatch<SetStateAction<string>> }) => {
+  const isLogin = useRef<boolean>(false);
+  const navigate:NavigateFunction = useNavigate();
+
+  const checkUser = async():Promise<number> => {
+    const response:AxiosResponse = await axi.get("check");
+    const statusCode = response.status;
+    return statusCode;
+  }
+
+  const logo = ():string => {
+    const srcList:string[] = 
+    [
+    "Smilies/Thinking%20Face.png",
+    "Smilies/Saluting%20Face.png",
+    "Smilies/Nerd%20Face.png",
+    "Smilies/Face%20with%20Raised%20Eyebrow.png",
+    "Smilies/Face%20with%20Peeking%20Eye.png",
+    "Smilies/Grimacing%20Face.png"
+    ]
+    const index:number =  Math.floor(Math.random()*srcList.length);
+    return srcList[index];
+  }
+
   const updateSnapshotTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
     setSnapshotTitle(e.target.value);
   }
 
+  const goToSignIn = () => {
+    if (isLogin.current === true) {
+      navigate("/manage/");
+    } else {
+      navigate("/");
+    }
+  }
+
+  useEffect(() => {
+    const checkAndCompare = async () => {
+      const statusCode = await checkUser();
+      if (statusCode === 200) { // 일반 숫자와 비교
+        isLogin.current = true;
+      }
+    };
+
+    checkAndCompare();
+  },[])
 
   return (
         <div className='room-header-container bg-black flex h-12 justify-between items-start sticky z-30 top-0 p-0.5'>
           <div className="h-full w-2/3 flex items-center">
             <div className="text-white">
-              로고 
+              <img src={`https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/${logo()}`} alt="..." width="25" height="25" />
             </div>
             <div className="p-2 w-6/12">
               <input
@@ -22,18 +66,23 @@ const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconCl
             </div>
           </div>
           <div className="h-full flex items-center mr-5">
-            <div className=''>
-              <div onClick={onIconClicked} className="cursor-pointer mr-2" id="이해도 조사">
-                <img src="/icons/iconCheckUp.png" alt="Check Up" className="w-[23px] h-[23px]" />
-              </div>
+            <div className="text-white h-full flex items-center mr-2">
+              <span 
+                className="material-icons select-none cursor-pointer"
+                onClick={goToSignIn}
+                >account_box</span>
             </div>
 
-            <div onClick={onIconClicked} className="cursor-pointer" id="코드 스냅샷">
-              <img src="/icons/iconCodeSnapshotHistory.png" alt="Code Snapshot History" className="w-[28px] h-[28px]" />
+              <div onClick={onIconClicked} className="flex cursor-pointer mr-2 h-full items-center" id="이해도 조사">
+                <span className="material-icons text-white select-none">question_answer</span>
+              </div>
+
+            <div onClick={onIconClicked} className="flex cursor-pointer h-full items-center" id="코드 스냅샷">
+              <span className="material-icons text-white select-none">work_history</span>
             </div>
           </div>
         </div>
   );
 }
 
-export default RoomHeader
+export default RoomHeader;
