@@ -78,6 +78,7 @@ export default function Drawer({
             >
               restore
             </span>
+          )
           }
           {
             !isCopied
@@ -85,7 +86,8 @@ export default function Drawer({
               <span
                 className="material-icons text-white ml-2 mr-2 cursor-pointer z-20"
                 onClick={copyCode}
-              >copy_all
+              >
+                copy_all
               </span>
               :
               <span
