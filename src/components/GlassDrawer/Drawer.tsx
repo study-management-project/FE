@@ -1,14 +1,39 @@
-import { Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
-import "./Drawer.css"
-import 'material-icons/iconfont/material-icons.css';
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import "./Drawer.css";
+import "material-icons/iconfont/material-icons.css";
 
-export default function Drawer({title, children, isOpen, setOpen, code, saveSnapshot, prevCode, restoreCode}:{title:string, children:ReactNode, isOpen:boolean, setOpen:Dispatch<SetStateAction<boolean>>, code:string, saveSnapshot:() => void, prevCode:string|undefined , restoreCode:() => void}) {
+export default function Drawer({
+  title,
+  children,
+  isOpen,
+  setOpen,
+  code,
+  saveSnapshot,
+  prevCode,
+  restoreCode,
+}: {
+  title: string;
+  children: ReactNode;
+  isOpen: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  code: string;
+  saveSnapshot: () => void;
+  prevCode: string | undefined;
+  restoreCode: () => void;
+}) {
   const [isCopied, setCopied] = useState<boolean>(false);
-  const closeDrawer = ():void => {
+  const closeDrawer = (): void => {
     setOpen(false);
-  }
+  };
 
-  const timer = useRef<number|undefined>();
+  const timer = useRef<number | undefined>();
 
   const debounceSave = () => {
     if (timer.current) {
@@ -16,18 +41,18 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
     } else {
       setTimeout(() => {
         saveSnapshot();
-      },1000)
+      }, 1000);
     }
-  }
+  };
 
   const copyCode = () => {
     navigator.clipboard.writeText(code);
     setCopied(true);
-  }
+  };
 
   useEffect(() => {
     setCopied(false);
-  },[code])
+  }, [code]);
 
   return (
     <>
@@ -40,18 +65,18 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
         onClick = {(e:React.MouseEvent) => {e.stopPropagation()}}
       >
         <div className="absolute -translate-x-28 mt-4">
-          {
-            prevCode === undefined
-            ?
-            <span
-            className="material-icons text-white hover:cursor-pointer invisible"
-            >restore
+          {prevCode === undefined ? (
+            <span className="material-icons text-white hover:cursor-pointer invisible">
+              restore
             </span>
-            :
+          ) : (
             <span
-            className="material-icons text-white hover:cursor-pointer"
-            onClick={() => {restoreCode()}}
-            >restore
+              className="material-icons text-white hover:cursor-pointer"
+              onClick={() => {
+                restoreCode();
+              }}
+            >
+              restore
             </span>
           }
           {
@@ -66,7 +91,8 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
             <span 
               className="material-icons-outlined text-green-400 mr-2 cursor-pointer z-20"
               onClick={copyCode}
-            >check_circle
+            >
+              check_circle
             </span>
           }
         <span 
@@ -82,6 +108,7 @@ export default function Drawer({title, children, isOpen, setOpen, code, saveSnap
           <div className="flex justify-center">
             {children}
           </div>
+          <div className="flex justify-center">{children}</div>
         </article>
       </section>
     </>
