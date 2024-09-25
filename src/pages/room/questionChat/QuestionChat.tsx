@@ -47,7 +47,7 @@ const QuestionChat = () => {
       >
         {questions.length > 0 ? (
           questions.map((q, index) => (
-            <div key={index} className="p-2 mb-2 bg-gray-100 rounded max-w-lg">
+            <div key={index} className="p-2 mb-2 bg-gray-100 rounded overflow-y-auto break-words whitespace-pre-wrap">
               {index + 1}. {q} {/* 질문을 리스트 형식으로 출력 */}
             </div>
           ))
