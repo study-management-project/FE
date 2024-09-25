@@ -19,7 +19,7 @@ const QuestionChat = () => {
       e.preventDefault(); // 줄바꿈 방지
       handleQuestionSubmit(); // 질문 제출
     }
-  }
+  };
 
   // textarea 자동 높이 조절을 위한 useEffect
   useEffect(() => {
@@ -43,7 +43,8 @@ const QuestionChat = () => {
       {/* 제출된 질문 리스트 출력 */}
       <div
         ref={chatBoxRef}
-        className="mb-4 h-64 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm">
+        className="mb-4 h-36 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm"
+      >
         {questions.length > 0 ? (
           questions.map((q, index) => (
             <div key={index} className="p-2 mb-2 bg-gray-100 rounded max-w-lg">
@@ -60,7 +61,7 @@ const QuestionChat = () => {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-full p-2 border border-gray-300 rounded resize-none font-noto text-sm"
+        className="w-full p-2 border border-gray-300 rounded resize-none font-noto text-sm max-h-28 overflow-y-auto"
         placeholder="궁금한 점은 여기에 질문해 보세요!"
         rows={4}
       />
