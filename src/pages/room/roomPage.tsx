@@ -45,8 +45,7 @@ const RoomPage = () => {
   // const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
   const [snapshotTitle, setSnapshotTitle] = useState<string>(
-    `${year}-${month.toString().length == 2 ? month : "0" + month}-${
-      date.toString().length == 2 ? date : "0" + date
+    `${year}-${month.toString().length == 2 ? month : "0" + month}-${date.toString().length == 2 ? date : "0" + date
     }`
   );
 
@@ -98,6 +97,12 @@ const RoomPage = () => {
     }
   };
 
+  const updateQuestions = (messageBody: string) => {
+    setQuestions((prevQuestions) => {
+      return [...prevQuestions, messageBody];
+    })
+  }
+
   // 아이콘이 클릭 되었을 때 동작
   const onIconClicked = (event: React.MouseEvent) => {
     const clickedTitle: string | null = event.currentTarget.id;
@@ -113,7 +118,8 @@ const RoomPage = () => {
                 <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />
                 <QuestionChat
                   questions={questions}
-                  onSubmit={handleQuestionSubmit}
+                  setQuestions={setQuestions}
+                  sock={sock}
                 />
               </div>
             );
@@ -143,11 +149,6 @@ const RoomPage = () => {
   const handleCheckUpSubmit = (title: string) => {
     console.log(`Q&A 내용: ${title}`);
     setDrawerTitle("Q&A 진행 중");
-  };
-
-  const handleQuestionSubmit = (question: string) => {
-    setQuestions([...questions, question]); // 새로운 질문 추가
-    console.log(`질문 제출: ${question}`);
   };
 
   const savePrevCode = (): void => {
@@ -231,7 +232,7 @@ const RoomPage = () => {
     );
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
     // 소켓 연결
-    sock.current.connect(["code", "snapshot"], [updateCode, getNewSnapshot]);
+    sock.current.connect(["code", "snapshot", "comment"], [updateCode, getNewSnapshot, updateQuestions]);
     await sock.current.joinRoom(params.roomId);
 
     // 오늘자 스냅샷
@@ -256,6 +257,20 @@ const RoomPage = () => {
     // Sock.subscribe('checkup');
     // 교사용 추가 예정
   };
+
+  useEffect(() => {
+    if (drawerTitle === "이해도 조사") {
+      setDrawerChildren(
+        <div className="flex flex-col h-full w-full px-4">
+          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />
+          <QuestionChat
+            questions={questions}
+            sock={sock}
+          />
+        </div>
+      );
+    }
+  }, [questions])
 
   // 페이지 mount시
   useEffect(() => {
@@ -347,20 +362,22 @@ const RoomPage = () => {
   // }
 
   useEffect(() => {
-    setDrawerChildren(
-      <CodeSnapshotUI
-        year={year}
-        month={month}
-        snapshots={snapshots}
-        setIsReceived={setIsReceived}
-        setCode={setCode}
-        setSnapshots={setSnapshots}
-        roomId={params.roomId}
-        dailySnapshots={dailySanpshots}
-        setDailySnapshots={setDailySnapshots}
-        savePrevCode={savePrevCode}
-      />
-    );
+    if (drawerTitle === "코드 스냅샷") {
+      setDrawerChildren(
+        <CodeSnapshotUI
+          year={year}
+          month={month}
+          snapshots={snapshots}
+          setIsReceived={setIsReceived}
+          setCode={setCode}
+          setSnapshots={setSnapshots}
+          roomId={params.roomId}
+          dailySnapshots={dailySanpshots}
+          setDailySnapshots={setDailySnapshots}
+          savePrevCode={savePrevCode}
+        />
+      );
+    }
   }, [snapshots, dailySanpshots]);
 
   return (

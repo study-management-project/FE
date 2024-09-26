@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
+import { Sock } from "../../../utils/socket/Socket";
 
-const QuestionChat = () => {
+const QuestionChat = ({ questions, sock }: { questions: string[], sock: React.MutableRefObject<Sock> }) => {
   const [question, setQuestion] = useState<string>(""); // 현재 입력된 질문
-  const [questions, setQuestions] = useState<string[]>([]); // 제출된 질문 리스트
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
 
   const handleQuestionSubmit = () => {
     if (question.trim()) {
-      setQuestions((prevQuestions) => [...prevQuestions, question]);
+      sock.current.sendComment(question);
       setQuestion(""); // 질문 제출 후 입력창 초기화
     }
   };
@@ -37,18 +37,18 @@ const QuestionChat = () => {
   }, [questions]);
 
   return (
-    <div className="bg-white p-5 rounded shadow-md font-noto text-base">
+    <div className="bg-white h-2/3 p-5 rounded shadow-md font-noto text-base">
       <p className="font-bold mb-4">질문 채팅방</p>
 
       {/* 제출된 질문 리스트 출력 */}
       <div
         ref={chatBoxRef}
-        className="mb-4 h-36 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm"
+        className="mb-4 h-3/5 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm"
       >
         {questions.length > 0 ? (
           questions.map((q, index) => (
             <div key={index} className="p-2 mb-2 bg-gray-100 rounded overflow-y-auto break-words whitespace-pre-wrap">
-              {index + 1}. {q} {/* 질문을 리스트 형식으로 출력 */}
+              {q} {/* 질문을 리스트 형식으로 출력 */}
             </div>
           ))
         ) : (
@@ -61,9 +61,9 @@ const QuestionChat = () => {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-full p-2 border border-gray-300 rounded resize-none font-noto text-sm max-h-28 overflow-y-auto"
+        className="w-full max-h-28 p-2 border border-gray-300 rounded resize-none font-noto text-sm overflow-y-auto"
         placeholder="궁금한 점은 여기에 질문해 보세요!"
-        rows={4}
+        rows={3}
       />
       <div className="w-full flex justify-end">
         <button
