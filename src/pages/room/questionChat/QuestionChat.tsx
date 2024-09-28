@@ -27,6 +27,7 @@ const QuestionChat = ({ questions, sock }: { questions: string[], sock: React.Mu
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
+
   }, [question]);
 
   // 새로운 질문이 추가될 때마다 스크롤을 맨 아래로 이동
@@ -34,6 +35,7 @@ const QuestionChat = ({ questions, sock }: { questions: string[], sock: React.Mu
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
+    console.log("useEffect 실행")
   }, [questions]);
 
   return (

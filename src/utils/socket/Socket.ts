@@ -28,7 +28,20 @@ export class Sock {
         this.client = Stomp.over(new SockJS(import.meta.env.VITE_SERVER_URL + 'ws'));
         this.client.connect({}, () => {
             for (let i = 0; i < topics.length; i++) {
-                this.subscribe(topics[i], actions[i]);
+                if (topics[i] !== "result/checkup") {
+                    this.subscribe(topics[i], actions[i]);
+                } else {
+                    if (this.client) {
+                        if (this.client.connected) {
+                            const subscription: StompSubscription = this.client.subscribe(
+                                "/user/queue/" + this.roomId + "/" + topics[i],
+                                (message: IMessage) => {
+                                    actions[i](message.body);
+                                });
+                            this.subscriptions.push(subscription);
+                        }
+                    }
+                }
             }
         });
     }
@@ -92,5 +105,13 @@ export class Sock {
             {},
             JSON.stringify({ uuid: uuid, title: snapshot.getTitle(), content: snapshot.getContent() })
         );
+    }
+
+    public sendCheckUp(title: string) {
+        this.client?.send(
+            "/share-checkup",
+            {},
+            JSON.stringify({ uuid: this.roomId, title: title, isOpen: true })
+        )
     }
 }

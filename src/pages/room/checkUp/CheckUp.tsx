@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from "react";
 import CheckUpVoteButton from "./CheckUpVoteButton";
+import { Sock } from "../../../utils/socket/Socket";
 
 type CheckUpProps = {
     onSubmit: (title: string) => void;
+    isLogin: React.MutableRefObject<boolean>;
+    sock: React.MutableRefObject<Sock>;
 };
 
-const CheckUp = ({ onSubmit }: CheckUpProps) => {
+const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
     const [title, setTitle] = useState<string>("");
     const [showVoteButtons, setShowVoteButtons] = useState<boolean>(false);
     const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
-    const [formVisible, setFormVisible] = useState<boolean>(true); // 폼 표시 여부 상태
+    const [formVisible, setFormVisible] = useState<boolean>(isLogin.current); // 폼 표시 여부 상태
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const handleSubmit = (event?: React.FormEvent) => {
@@ -18,17 +21,18 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
             // title이 비어있다면 함수 종료
             return;
         }
-        onSubmit(title); // 이해도조사 제목을 RoomPage로 전달
+        onSubmit(title); // Q&A 제목을 RoomPage로 전달
         setSubmittedTitle(title); // 제목 저장
         setFormVisible(false); // 폼 숨기기
         setShowVoteButtons(true); // 투표 버튼 표시
+        sock.current.sendCheckUp(title);
     };
 
-    // Enter 키로 이해도 조사를 시작할 수 있도록 처리
+    // Enter 키로 Q&A를 시작할 수 있도록 처리
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault(); // 줄바꿈 방지
-            handleSubmit(); // 이해도 조사 시작
+            handleSubmit(); // Q&A 시작
         }
     }
 
@@ -36,6 +40,14 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
         console.log(`사용자가 ${vote}를 선택했습니다.`); ``
         setShowVoteButtons(true);
     };
+
+    useEffect(() => {
+        if (!isLogin.current) {
+            setFormVisible(false);
+            setSubmittedTitle(title);
+            setShowVoteButtons(true);
+        }
+    }, [isLogin.current, title]);
 
     // textarea 자동 높이 조절을 위한 useEffect
     useEffect(() => {
@@ -46,10 +58,10 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
     }, [title]);
 
     return (
-        <div className="mb-4 rounded bg-white p-5 shadow-md font-noto">
+        <div className="mb-4 rounded h-1/4 bg-white p-5 shadow-md font-noto">
             {formVisible ? (
-                <form onSubmit={handleSubmit} className="flex w-full flex-col items-start">
-                    <label className="mb-4 w-full text-left text-base font-bold text-black">
+                <form onSubmit={handleSubmit} className="flex flex-col items-center">
+                    <label className="flex items-center mb-4 w-full text-left text-base font-bold text-black">
                         Q&A 내용
                     </label>
                     <textarea
@@ -57,7 +69,7 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="mb-4 w-full resize-none rounded border border-gray-300 p-2 font-noto text-sm"
+                        className="mb-4 w-full max-h-16 resize-none rounded border border-gray-300 p-2 font-noto text-sm"
                         placeholder="Q&A 진행할 내용을 입력하세요"
                         rows={2}
                     />
@@ -80,7 +92,7 @@ const CheckUp = ({ onSubmit }: CheckUpProps) => {
                         />
                         <p className="mb-4 text-sm">{submittedTitle}</p>
                     </div>
-                    <p className="mb-4 text-sm">지금까지 학습한 내용 잘 이해했나요?</p>
+                    <p className="mb-4 justify-center break-words text-sm">지금까지 학습한 내용 잘 이해했나요?</p>
                 </div>
             )}
 

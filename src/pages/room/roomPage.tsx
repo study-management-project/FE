@@ -41,6 +41,7 @@ const RoomPage = () => {
 
   // textarea disabled (유저 권한에 따름)
   // const [disabled, setDisabled] = useState<boolean>(true);
+  const isLogin = useRef<boolean>(false);
 
   // const commentPage = useRef<number>(0);
   // 스냅샷 타이틀
@@ -65,8 +66,6 @@ const RoomPage = () => {
   // 선택된 날짜에 존재하는 코드 스냅샷들
   const [dailySanpshots, setDailySnapshots] = useState<CodeSnapshot[]>([]);
 
-  // 코멘트들
-  const [comments, setComments] = useState<Comment[]>([]);
   // 질문 목록 상태 추가
   const [questions, setQuestions] = useState<string[]>([]);
 
@@ -97,10 +96,11 @@ const RoomPage = () => {
     }
   };
 
+
   const updateQuestions = (messageBody: string) => {
     setQuestions((prevQuestions) => {
       return [...prevQuestions, messageBody];
-    })
+    });
   }
 
   // 아이콘이 클릭 되었을 때 동작
@@ -111,14 +111,13 @@ const RoomPage = () => {
         if (prevData === clickedTitle) {
           setOpen(!open);
         } else {
-          if (clickedTitle === "이해도 조사") {
-            // 이해도 조사와 질문 채팅 UI 추가
+          if (clickedTitle === "Q&A") {
+            // Q&A와 질문 채팅 UI 추가
             setDrawerChildren(
               <div className="flex flex-col h-full w-full px-4">
-                <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />
+                <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} />
                 <QuestionChat
                   questions={questions}
-                  setQuestions={setQuestions}
                   sock={sock}
                 />
               </div>
@@ -224,16 +223,46 @@ const RoomPage = () => {
     });
   };
 
+  const checkUser = async (): Promise<number> => {
+    const response: AxiosResponse = await axi.get("check");
+    const statusCode = response.status;
+    console.log(statusCode);
+    return statusCode;
+  }
+
   // 페이지 로드 시 방 정보,
   const pageOnload = async () => {
+    try {
+      const statusCode = await checkUser();
+      if (statusCode === 200) { // 일반 숫자와 비교
+        isLogin.current = true;
+      }
+    } catch {
+      console.log();
+    }
+
     // 방 정보
     const roomInfoResponse: AxiosResponse = await axi.get(
       `room/${params.roomId}`
     );
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
+
     // 소켓 연결
-    sock.current.connect(["code", "snapshot", "comment"], [updateCode, getNewSnapshot, updateQuestions]);
+    if (isLogin.current === false) {
+      sock.current.connect(["code", "snapshot", "comment", "checkup"], [updateCode, getNewSnapshot, updateQuestions, () => { }]);
+    } else {
+      // 강사일 때
+      sock.current.connect(["code", "snapshot", "comment", "result/checkup"], [updateCode, getNewSnapshot, updateQuestions]);
+    }
     await sock.current.joinRoom(params.roomId);
+
+    const comments = await axi.get(`room/${params.roomId}/comment`);
+
+    const arr: string[] = [];
+    for (let i = 0; i < comments.data.length; i++) {
+      arr.push(comments.data[i].content);
+    }
+
 
     // 오늘자 스냅샷
     const dailySnapshotsResponse: AxiosResponse = await axi.get(
@@ -250,19 +279,14 @@ const RoomPage = () => {
       return nextState;
     });
     setDailySnapshots(todayDailySnapshots);
-    // Sock.subscribe('comment'
-    //   , addComment
-    // );
-
-    // Sock.subscribe('checkup');
-    // 교사용 추가 예정
   };
 
   useEffect(() => {
-    if (drawerTitle === "이해도 조사") {
+    console.log(questions);
+    if (drawerTitle !== "코드 스냅샷") {
       setDrawerChildren(
         <div className="flex flex-col h-full w-full px-4">
-          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} />
+          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} />
           <QuestionChat
             questions={questions}
             sock={sock}
@@ -352,7 +376,7 @@ const RoomPage = () => {
     };
   }, [code]);
 
-  // 이해도 조사(checkUp) 및 질문 채팅창(questionChat) 포커싱 문제 떄문에 우선 주석 처리해두었습니다.
+  // Q&A(checkUp) 및 질문 채팅창(questionChat) 포커싱 문제 떄문에 우선 주석 처리해두었습니다.
   // const focus = (): void => {
   //   let textarea: HTMLElement | null = document.getElementById('text-area');
   //   if (textarea) {
@@ -383,6 +407,7 @@ const RoomPage = () => {
   return (
     <div className="bg-[#212121] w-full min-h-screen max-h-screen h-auto overflow-auto">
       <RoomHeader
+        isLogin={isLogin}
         onIconClicked={onIconClicked}
         snapshotTitle={snapshotTitle}
         setSnapshotTitle={setSnapshotTitle}
