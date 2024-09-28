@@ -61,7 +61,7 @@ const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
         <div className="mb-4 rounded h-1/4 bg-white p-5 shadow-md font-noto">
             {formVisible ? (
                 <form onSubmit={handleSubmit} className="flex flex-col items-center">
-                    <label className="flex items-center mb-4 w-full text-left text-base font-bold text-black">
+                    <label className="mb-4 w-full text-left text-base font-bold text-black">
                         Q&A 내용
                     </label>
                     <textarea
@@ -76,15 +76,15 @@ const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
                     <div className="flex w-full justify-end">
                         <button
                             type="submit"
-                            className="flex items-center justify-center rounded bg-blue-500 p-2 text-xs text-white hover:bg-blue-600"
+                            className="items-center rounded bg-blue-500 p-2 text-xs text-white hover:bg-blue-600"
                         >
                             조사 시작
                         </button>
                     </div>
                 </form>
             ) : (
-                <div className="flex flex-col text-black font-noto">
-                    <div className="flex items-center font-bold">
+                <div className="flex-col text-black font-noto">
+                    <div className="flex font-bold">
                         <img
                             src="/icons/iconInformation.png"
                             alt="정보 아이콘"

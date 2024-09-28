@@ -285,7 +285,7 @@ const RoomPage = () => {
     console.log(questions);
     if (drawerTitle !== "코드 스냅샷") {
       setDrawerChildren(
-        <div className="flex flex-col h-full w-full px-4">
+        <div>
           <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} />
           <QuestionChat
             questions={questions}
