@@ -75,13 +75,8 @@ const RoomPage = () => {
 
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
-
-  const saveSnapshot = (): void => {
-    const savedSnapshot: CodeSnapshot = new CodeSnapshot(
-      snapshotTitle,
-      code,
-      new Date().toString()
-    );
+  const saveSnapshot = ():void => {
+    const savedSnapshot:CodeSnapshot = new CodeSnapshot(snapshotTitle, code, new Date().toString());
     sock.current.sendSnapshot(params.roomId, savedSnapshot);
     if (
       snapshots.getIn([stringYear, stringMonth, stringDate], undefined) ===
