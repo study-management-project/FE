@@ -1,15 +1,23 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
+import { Sock } from "../../../utils/socket/Socket";
 
-const QuestionChat = () => {
+const QuestionChat = ({ questions, sock }: { questions: string[], sock: React.MutableRefObject<Sock> }) => {
   const [question, setQuestion] = useState<string>(""); // 현재 입력된 질문
-  const [questions, setQuestions] = useState<string[]>([]); // 제출된 질문 리스트
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const chatBoxRef = useRef<HTMLDivElement | null>(null);
 
   const handleQuestionSubmit = () => {
     if (question.trim()) {
-      // 질문이 비어 있지 않을 때만 실행
-      setQuestions([...questions, question]); // 기존 질문 리스트에 새로운 질문 추가
+      sock.current.sendComment(question);
       setQuestion(""); // 질문 제출 후 입력창 초기화
+    }
+  };
+
+  // Enter 키로 질문 제출 가능하도록 처리
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // 줄바꿈 방지
+      handleQuestionSubmit(); // 질문 제출
     }
   };
 
@@ -21,16 +29,26 @@ const QuestionChat = () => {
     }
   }, [question]);
 
+  // 새로운 질문이 추가될 때마다 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [questions]);
+
   return (
-    <div className="bg-white p-5 rounded shadow-md font-noto text-base">
+    <div className="bg-white h-2/3 p-5 rounded shadow-md font-noto text-base">
       <p className="font-bold mb-4">질문 채팅방</p>
 
       {/* 제출된 질문 리스트 출력 */}
-      <div className="mb-4 h-64 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm">
+      <div
+        ref={chatBoxRef}
+        className="mb-4 h-3/5 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm"
+      >
         {questions.length > 0 ? (
           questions.map((q, index) => (
-            <div key={index} className="p-2 mb-2 bg-gray-100 rounded max-w-lg">
-              {index + 1}. {q} {/* 질문을 리스트 형식으로 출력 */}
+            <div key={index} className="p-2 mb-2 bg-gray-100 rounded overflow-y-auto break-words whitespace-pre-wrap">
+              {q} {/* 질문을 리스트 형식으로 출력 */}
             </div>
           ))
         ) : (
@@ -42,9 +60,10 @@ const QuestionChat = () => {
         ref={textareaRef}
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded resize-none font-noto text-sm"
+        onKeyDown={handleKeyDown}
+        className="w-full max-h-28 p-2 border border-gray-300 rounded resize-none font-noto text-sm overflow-y-auto"
         placeholder="궁금한 점은 여기에 질문해 보세요!"
-        rows={4}
+        rows={3}
       />
       <div className="w-full flex justify-end">
         <button
