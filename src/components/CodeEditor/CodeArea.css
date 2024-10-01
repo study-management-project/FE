@@ -8,7 +8,6 @@
 textarea {
     width: calc(100% - 2rem);
     max-height: calc(100%-3rem);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 

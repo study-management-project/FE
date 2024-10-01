@@ -70,7 +70,7 @@ const CodeArea = ({code, setCode, height, setHeight, prevCode, saveSnapshot}:{co
   return (
     <>
       <textarea 
-      className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-12 font-light'
+      className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-12'
       style={{height:`${height*1.51}rem`, caretColor: 'white'}}
       wrap='off'
       onInput={adjustHeight}
