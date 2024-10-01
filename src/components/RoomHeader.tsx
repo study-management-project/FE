@@ -51,7 +51,7 @@ const RoomHeader = ({onIconClicked, snapshotTitle, setSnapshotTitle }: {onIconCl
   },[])
 
   return (
-        <div className='room-header-container bg-black flex h-12 justify-between items-start sticky z-30 top-0 p-0.5'>
+        <div className='room-header-container bg-black flex h-12 justify-between items-start sticky z-30 top-0 left-0 p-0.5'>
           <div className="h-full w-2/3 flex items-center">
             <div className="text-white">
               <img src={`https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/${logo()}`} alt="..." width="25" height="25" />
