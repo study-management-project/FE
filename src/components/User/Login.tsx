@@ -24,7 +24,6 @@ const Login = () => {
 
         try {
             const response: AxiosResponse = await axi.post("/login", JSON.stringify(data));
-            console.log(response);
             if (response.status === 200) {
                 navigate('/manage');
             }
