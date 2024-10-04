@@ -74,9 +74,8 @@ const RoomPage = () => {
 
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
-
-  // 이해도 조사 title useState
   const [checkUpTitle, setCheckUpTitle] = useState<string>("none")
+
 
   const saveSnapshot = (): void => {
     const savedSnapshot: CodeSnapshot = new CodeSnapshot(
