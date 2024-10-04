@@ -6,6 +6,7 @@ const CodeArea = ({code, setCode, height, setHeight, prevCode, saveSnapshot}:{co
   const textarea = useRef<HTMLTextAreaElement | null>(null);
   const lineHeight:number = 24;
   const highlightedCodeRef = useRef<HTMLDivElement | null>(null);
+  const prevSelectionStart= useRef<number>(-1);
   // 높이 조정
   const adjustHeight = ():void => {
     if (textarea.current) {
@@ -31,6 +32,19 @@ const CodeArea = ({code, setCode, height, setHeight, prevCode, saveSnapshot}:{co
       e.preventDefault();
       saveSnapshot();
       return;
+    } else if (e.key === "Tab") {
+      const {currentTarget} = e;
+      e.preventDefault();
+      setCode((prevCode) => {
+        prevSelectionStart.current = currentTarget.selectionStart;
+        const newCode:string = prevCode.substring(0, currentTarget.selectionStart) + "  " + prevCode.substring(currentTarget.selectionEnd);
+        return newCode;
+      })
+      setTimeout(() => {
+        textarea.current?.focus();
+        textarea.current?.setSelectionRange(prevSelectionStart.current+2, prevSelectionStart.current+2);
+        prevSelectionStart.current += 2;
+      },0)
     }
 
     setTimeout(() => {
@@ -70,7 +84,7 @@ const CodeArea = ({code, setCode, height, setHeight, prevCode, saveSnapshot}:{co
   return (
     <>
       <textarea 
-      className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-12 font-light'
+      className='resize-none border-none focus:border-none outline-none absolute p-0 bg-transparent text-transparent ml-12'
       style={{height:`${height*1.51}rem`, caretColor: 'white'}}
       wrap='off'
       onInput={adjustHeight}
