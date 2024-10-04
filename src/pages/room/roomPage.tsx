@@ -75,6 +75,9 @@ const RoomPage = () => {
   // drawer 관련
   const [open, setOpen] = useState<boolean>(false);
 
+  // 이해도 조사 title useState
+  const [checkUpTitle, setCheckUpTitle] = useState<string>("none")
+
   const saveSnapshot = (): void => {
     const savedSnapshot: CodeSnapshot = new CodeSnapshot(
       snapshotTitle,
@@ -115,7 +118,7 @@ const RoomPage = () => {
             // Q&A와 질문 채팅 UI 추가
             setDrawerChildren(
               <div className="flex flex-col h-full w-full px-4">
-                <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} />
+                <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
                 <QuestionChat
                   questions={questions}
                   sock={sock}
@@ -145,8 +148,21 @@ const RoomPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (drawerTitle != "코드 스냅샷") {
+      setDrawerChildren(
+        <div className="flex flex-col h-full w-full px-4">
+          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
+          <QuestionChat
+            questions={questions}
+            sock={sock}
+          />
+        </div>
+      );
+    }
+  }, [checkUpTitle])
+
   const handleCheckUpSubmit = (title: string) => {
-    console.log(`Q&A 내용: ${title}`);
     setDrawerTitle("Q&A 진행 중");
   };
 
@@ -226,7 +242,6 @@ const RoomPage = () => {
   const checkUser = async (): Promise<number> => {
     const response: AxiosResponse = await axi.get("check");
     const statusCode = response.status;
-    console.log(statusCode);
     return statusCode;
   }
 
@@ -249,7 +264,7 @@ const RoomPage = () => {
 
     // 소켓 연결
     if (isLogin.current === false) {
-      sock.current.connect(["code", "snapshot", "comment", "checkup"], [updateCode, getNewSnapshot, updateQuestions, () => { }]);
+      sock.current.connect(["code", "snapshot", "comment", "checkup"], [updateCode, getNewSnapshot, updateQuestions, getCheckTitle]);
     } else {
       // 강사일 때
       sock.current.connect(["code", "snapshot", "comment", "result/checkup"], [updateCode, getNewSnapshot, updateQuestions]);
@@ -262,6 +277,8 @@ const RoomPage = () => {
     for (let i = 0; i < comments.data.length; i++) {
       arr.push(comments.data[i].content);
     }
+
+    setQuestions(arr);
 
 
     // 오늘자 스냅샷
@@ -281,12 +298,16 @@ const RoomPage = () => {
     setDailySnapshots(todayDailySnapshots);
   };
 
+  const getCheckTitle = (resivedTitle: string) => {
+    const obj = JSON.parse(resivedTitle);
+    setCheckUpTitle(obj["title"]);
+  }
+
   useEffect(() => {
-    console.log(questions);
     if (drawerTitle !== "코드 스냅샷") {
       setDrawerChildren(
         <div>
-          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} />
+          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
           <QuestionChat
             questions={questions}
             sock={sock}

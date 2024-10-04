@@ -35,7 +35,6 @@ const QuestionChat = ({ questions, sock }: { questions: string[], sock: React.Mu
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-    console.log("useEffect 실행")
   }, [questions]);
 
   return (

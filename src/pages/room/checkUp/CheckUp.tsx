@@ -6,26 +6,29 @@ type CheckUpProps = {
     onSubmit: (title: string) => void;
     isLogin: React.MutableRefObject<boolean>;
     sock: React.MutableRefObject<Sock>;
+    setCheckUpTitle: React.Dispatch<React.SetStateAction<string>>;
+    checkUpTitle: string;
 };
 
-const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
-    const [title, setTitle] = useState<string>("");
+const CheckUp = ({ onSubmit, isLogin, sock, setCheckUpTitle, checkUpTitle }: CheckUpProps) => {
+    // const [title, setTitle] = useState<string>("");
     const [showVoteButtons, setShowVoteButtons] = useState<boolean>(false);
-    const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
+    // const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
     const [formVisible, setFormVisible] = useState<boolean>(isLogin.current); // 폼 표시 여부 상태
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const handleSubmit = (event?: React.FormEvent) => {
         if (event) event.preventDefault();
-        if (title.trim() === "") {
+        if (checkUpTitle.trim() === "") {
             // title이 비어있다면 함수 종료
             return;
         }
-        onSubmit(title); // Q&A 제목을 RoomPage로 전달
-        setSubmittedTitle(title); // 제목 저장
+        onSubmit(checkUpTitle); // Q&A 제목을 RoomPage로 전달
+        // setSubmittedTitle(checkUpTitle); // 제목 저장
+        // setCheckUpTitle();
         setFormVisible(false); // 폼 숨기기
         setShowVoteButtons(true); // 투표 버튼 표시
-        sock.current.sendCheckUp(title);
+        sock.current.sendCheckUp(checkUpTitle);
     };
 
     // Enter 키로 Q&A를 시작할 수 있도록 처리
@@ -44,18 +47,21 @@ const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
     useEffect(() => {
         if (!isLogin.current) {
             setFormVisible(false);
-            setSubmittedTitle(title);
+            //setSubmittedTitle(title);
+            setCheckUpTitle(checkUpTitle);
             setShowVoteButtons(true);
         }
-    }, [isLogin.current, title]);
+    }, [isLogin.current, checkUpTitle]);
 
     // textarea 자동 높이 조절을 위한 useEffect
     useEffect(() => {
+        console.log(`checkUpTitle = ${checkUpTitle}`)
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
-    }, [title]);
+
+    }, [checkUpTitle]);
 
     return (
         <div className="mb-4 rounded h-1/4 bg-white p-5 shadow-md font-noto">
@@ -66,8 +72,12 @@ const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
                     </label>
                     <textarea
                         ref={textareaRef}
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        // value={}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                            const value = e.currentTarget.value;
+                            setCheckUpTitle(value);
+                        }
+                        }
                         onKeyDown={handleKeyDown}
                         className="mb-4 w-full max-h-16 resize-none rounded border border-gray-300 p-2 font-noto text-sm"
                         placeholder="Q&A 진행할 내용을 입력하세요"
@@ -90,7 +100,7 @@ const CheckUp = ({ onSubmit, isLogin, sock }: CheckUpProps) => {
                             alt="정보 아이콘"
                             className="mr-2 mb-4 h-4 w-4"
                         />
-                        <p className="mb-4 text-sm">{submittedTitle}</p>
+                        <p className="mb-4 text-sm">{checkUpTitle}</p>
                     </div>
                     <p className="mb-4 justify-center break-words text-sm">지금까지 학습한 내용 잘 이해했나요?</p>
                 </div>
