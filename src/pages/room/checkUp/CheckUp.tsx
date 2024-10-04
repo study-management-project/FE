@@ -55,7 +55,6 @@ const CheckUp = ({ onSubmit, isLogin, sock, setCheckUpTitle, checkUpTitle }: Che
 
     // textarea 자동 높이 조절을 위한 useEffect
     useEffect(() => {
-        console.log(`checkUpTitle = ${checkUpTitle}`)
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
