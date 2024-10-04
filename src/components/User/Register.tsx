@@ -15,11 +15,11 @@ export default function Register() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(getName === '' || getId === '' || getPwd === '' || getPwdChk === '') {
+        if (getName === '' || getId === '' || getPwd === '' || getPwdChk === '') {
             setEmpty(!isEmpty)
             return;
         }
-        if(getPwd !== getPwdChk) {
+        if (getPwd !== getPwdChk) {
             setCorrect(!isCorrect);
             return;
         }

@@ -110,7 +110,7 @@ export default function Drawer({
             </span>
             <header className="font-bold text-white"> {title}</header>
           </div>
-          <div className="flex justify-center h-full">{children}</div>
+          <div className="flex justify-center h-[calc(100%-72px)]">{children}</div>
         </article>
       </section>
     </>

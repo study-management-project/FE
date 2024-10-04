@@ -1,7 +1,7 @@
 @supports (not selector(::-webkit-scrollbar)) and (not selector(::-webkit-scrollbar-button)) and (not selector(::-webkit-scrollbar-thumb)) and (not selector(::-webkit-scrollbar-track)) {
     textarea {
         scrollbar-width: none;
-        scrollbar-color:  rgba( 255, 255, 255, 0.35 ) transparent;
+        scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
     }
 }
 
@@ -11,13 +11,13 @@ textarea {
 }
 
 
-textarea::-webkit-scrollbar{
+textarea::-webkit-scrollbar {
     display: none;
     height: 3px;
-    width : 3px;
+    width: 3px;
 }
 
-textarea::-webkit-scrollbar-button{
+textarea::-webkit-scrollbar-button {
     display: none;
 }
 
@@ -31,8 +31,8 @@ textarea::-webkit-scrollbar-track {
 
 .code-container {
     position: relative;
-  }
-  
+}
+
 .highlighted-code {
     position: absolute;
     top: 0;
@@ -50,4 +50,3 @@ textarea {
     position: relative;
     z-index: 2;
 }
-  
