@@ -29,6 +29,9 @@ const CheckUp = ({ onSubmit, isLogin, sock, setCheckUpTitle, checkUpTitle }: Che
         setFormVisible(false); // 폼 숨기기
         setShowVoteButtons(true); // 투표 버튼 표시
         sock.current.sendCheckUp(checkUpTitle);
+        setTimeout(() => {
+            sock.current.getCheckUpResult();
+        },1000)
     };
 
     // Enter 키로 Q&A를 시작할 수 있도록 처리
