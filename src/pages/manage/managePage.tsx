@@ -11,8 +11,11 @@ import { GlassModal } from "../../components/GlassModal";
 const ManagePage = () => {
   const navigate:NavigateFunction = useNavigate();
   const [rooms, setRooms] = useState<RoomInfo[]>([]);
+  const [filteredRooms, setFiltered] = useState<RoomInfo[]>([]);
+  const [filterString, setFilter] = useState<string>("");
   const [modalOpen, setModal] = useState<boolean>(false);
   const [isDropdownOpen, setDropdown] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>("사용자명");
   
   const getRooms = async():Promise<void> => {
     const response:AxiosResponse = await axi.get('rooms');
@@ -39,6 +42,7 @@ const ManagePage = () => {
       navigate('/');
       return;
     }
+    setUsername(response.data.username);
     await getRooms();
   }
 
@@ -53,7 +57,7 @@ const ManagePage = () => {
         onClick={() => setDropdown((prev) => prev ? !prev : prev)}
       >
         {/* Sidebar */}
-        <Sidebar rooms={rooms} goToRoom = {goToRoom} setModal={setModal} isDropdownOpen={isDropdownOpen} setDropdown={setDropdown} logout={logout}/>
+        <Sidebar rooms={rooms} goToRoom = {goToRoom} setModal={setModal} isDropdownOpen={isDropdownOpen} setDropdown={setDropdown} logout={logout} username = {username}/>
 
         <div className="w-full flex flex-col">
           {/* Header */}
@@ -65,7 +69,7 @@ const ManagePage = () => {
             {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {rooms?.map((room) => (
-                <RoomCard room={room} goToRoom={goToRoom} />
+                <RoomCard room={room} goToRoom={goToRoom} id={room.getId()} />
               ))}
             </div>
           </div>

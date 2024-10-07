@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { RoomInfo } from '../model/RoomInfo';
 
-const RoomCard = ({room, goToRoom}: {room:RoomInfo, goToRoom:(roomUuid:string) => void}) => {
+const RoomCard = ({room, goToRoom, id}: {room:RoomInfo, goToRoom:(roomUuid:string) => void, id:number}) => {
     const [dropdownOpen, setDropdown] = useState<boolean>(false);
 
   return (

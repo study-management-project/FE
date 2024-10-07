@@ -19,8 +19,12 @@ export class Sock {
         return new Sock();
     }
 
-    public getRoomId() {
-        return this.roomId;
+    public getRoomId():string {
+        return this.roomId as string;
+    }
+
+    public setRoomId(uuid:string):void {
+        this.roomId = uuid;
     }
 
     // 소켓 연결
@@ -50,7 +54,6 @@ export class Sock {
     // 방 접속
     public async joinRoom(roomId: string | undefined): Promise<void> {
         const response: AxiosResponse = await axi.get(`/room/${roomId}`);
-        this.roomId = roomId;
         return response.data;
     }
 
@@ -112,6 +115,14 @@ export class Sock {
             "/share-checkup",
             {},
             JSON.stringify({ uuid: this.roomId, title: title, isOpen: true })
+        )
+    }
+
+    public getCheckUpResult() {
+        this.client?.send(
+            "/end-checkup",
+            {},
+            JSON.stringify({ uuid: this.roomId })
         )
     }
 }

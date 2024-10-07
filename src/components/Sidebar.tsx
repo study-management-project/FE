@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { RoomInfo } from "../model/RoomInfo";
 
-const Sidebar = ({ rooms, goToRoom, setModal, isDropdownOpen, setDropdown, logout }: { rooms: RoomInfo[], goToRoom: (roomUid: string) => void, setModal: Dispatch<SetStateAction<boolean>>, isDropdownOpen:boolean, setDropdown: Dispatch<SetStateAction<boolean>>, logout:() => void }) => {
+const Sidebar = ({ rooms, goToRoom, setModal, isDropdownOpen, setDropdown, logout, username }: { rooms: RoomInfo[], goToRoom: (roomUid: string) => void, setModal: Dispatch<SetStateAction<boolean>>, isDropdownOpen:boolean, setDropdown: Dispatch<SetStateAction<boolean>>, logout:() => void, username:string }) => {
  
 
   return (
@@ -17,7 +17,7 @@ const Sidebar = ({ rooms, goToRoom, setModal, isDropdownOpen, setDropdown, logou
           >
             <div className="h-full w-8 bg-pink-300 rounded-full"></div>
             <div className="leading-8 align-middle pl-2 select-none">
-              사용자명
+              {username.length >= 8 ? username.substring(0,8  )+"..." : username }
             </div>
             {isDropdownOpen ? (
               <div className="absolute bg-white/25 backdrop-blur-sm shadow-lg rounded-xl top-14 z-20 w-32">

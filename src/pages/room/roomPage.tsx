@@ -246,6 +246,7 @@ const RoomPage = () => {
 
   // 페이지 로드 시 방 정보,
   const pageOnload = async () => {
+    sock.current.setRoomId(params.roomId as string);
     try {
       const statusCode = await checkUser();
       if (statusCode === 200) { // 일반 숫자와 비교
@@ -261,16 +262,21 @@ const RoomPage = () => {
     );
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
 
+    // 이해도 조사 결과를 받았을 때 실행할 함수
+    const onCheckUpResult = (result:string) => {
+      console.log(result);
+    }
     // 소켓 연결
     if (isLogin.current === false) {
       sock.current.connect(["code", "snapshot", "comment", "checkup"], [updateCode, getNewSnapshot, updateQuestions, getCheckTitle]);
     } else {
       // 강사일 때
-      sock.current.connect(["code", "snapshot", "comment", "result/checkup"], [updateCode, getNewSnapshot, updateQuestions]);
+      sock.current.connect(["code", "snapshot", "comment", "result/checkup"], [updateCode, getNewSnapshot, updateQuestions, onCheckUpResult]);
     }
     await sock.current.joinRoom(params.roomId);
 
     const comments = await axi.get(`room/${params.roomId}/comment`);
+
 
     const arr: string[] = [];
     for (let i = 0; i < comments.data.length; i++) {
