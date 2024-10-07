@@ -41,7 +41,7 @@ const QuestionChat = ({ questions, sock }: { questions: string[], sock: React.Mu
     <div className="bg-white h-2/3 p-5 rounded shadow-md font-noto text-base">
       <p className="font-bold mb-4">질문 채팅방</p>
 
-      {/* 제출된 질문 리스트 출력 */}
+      {/* 제출된 질문 리스트 출력z */}
       <div
         ref={chatBoxRef}
         className="mb-4 h-3/5 overflow-y-auto border border-gray-300 rounded bg-gray-50 p-2 text-sm"

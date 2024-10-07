@@ -305,7 +305,7 @@ const RoomPage = () => {
   useEffect(() => {
     if (drawerTitle !== "코드 스냅샷") {
       setDrawerChildren(
-        <div>
+        <div className="flex flex-col h-full w-full px-4">
           <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
           <QuestionChat
             questions={questions}
