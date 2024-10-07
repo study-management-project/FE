@@ -9,9 +9,10 @@ import { GlassModal } from "../../components/GlassModal";
 
 
 const ManagePage = () => {
-  const navigator:NavigateFunction = useNavigate();
+  const navigate:NavigateFunction = useNavigate();
   const [rooms, setRooms] = useState<RoomInfo[]>([]);
   const [modalOpen, setModal] = useState<boolean>(false);
+  const [isDropdownOpen, setDropdown] = useState<boolean>(false);
   
   const getRooms = async():Promise<void> => {
     const response:AxiosResponse = await axi.get('rooms');
@@ -20,18 +21,39 @@ const ManagePage = () => {
   }
 
   const goToRoom = (roomUuid:string):void => {
-    navigator(`/room/${roomUuid}`);
+    navigate(`/room/${roomUuid}`);
+  }
+
+  const logoutImpl = async():Promise<void> => {
+    await axi.get('logout');
+    navigate('/');
+  }
+
+  const logout = ():void => {
+    logoutImpl();
+  }
+
+  const onPageLoad = async () => {
+    const response:AxiosResponse = await axi.get('check');
+    if (response.status !== 200) {
+      navigate('/');
+      return;
+    }
+    await getRooms();
   }
 
   useEffect(() => {
-    getRooms();
+    onPageLoad();
   },[])
+
 
   return (
     <>
-      <div className="flex w-full">
+      <div className="flex w-full"
+        onClick={() => setDropdown((prev) => prev ? !prev : prev)}
+      >
         {/* Sidebar */}
-        <Sidebar rooms={rooms} goToRoom = {goToRoom} setModal={setModal}/>
+        <Sidebar rooms={rooms} goToRoom = {goToRoom} setModal={setModal} isDropdownOpen={isDropdownOpen} setDropdown={setDropdown} logout={logout}/>
 
         <div className="w-full flex flex-col">
           {/* Header */}

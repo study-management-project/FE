@@ -17,9 +17,9 @@ const HighlightedCode = ({ code}: { code: string }) => {
     },[code])
 
   return (
-    <pre>
+    <pre className='font-noto p-0'>
       <code 
-      className={language} 
+      className={`${language} font-noto`}
       dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(displayValue, {ALLOWED_TAGS: ["span"]}) }} />
     </pre>
   );

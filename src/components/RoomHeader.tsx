@@ -35,27 +35,28 @@ const RoomHeader = ({ isLogin, onIconClicked, snapshotTitle, setSnapshotTitle }:
   }
 
   return (
-    <div className='room-header-container bg-black flex h-12 justify-between items-start sticky z-30 top-0 p-0.5'>
-      <div className="h-full w-2/3 flex items-center">
-        <div className="text-white">
-          <img src={`https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/${logo()}`} alt="..." width="25" height="25" />
-        </div>
-        <div className="p-2 w-6/12">
-          <input
-            className="leading-8 bg-transparent text-xl text-white w-2/3"
-            value={snapshotTitle}
-            onChange={updateSnapshotTitle}
-          >
-          </input>
-        </div>
-      </div>
-      <div className="h-full flex items-center mr-5">
-        <div className="text-white h-full flex items-center mr-2">
-          <span
-            className="material-icons select-none cursor-pointer"
-            onClick={goToSignIn}
-          >account_box</span>
-        </div>
+
+        <div className='room-header-container bg-black flex h-12 justify-between items-start sticky z-30 top-0 left-0 p-0.5'>
+          <div className="h-full w-2/3 flex items-center">
+            <div className="text-white">
+              <img src={`https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/${logo()}`} alt="..." width="25" height="25" />
+            </div>
+            <div className="p-2 w-6/12">
+              <input
+              className="leading-8 bg-transparent text-xl text-white w-2/3"
+              value={snapshotTitle}
+              onChange={updateSnapshotTitle}
+              >
+              </input>
+            </div>
+          </div>
+          <div className="h-full flex items-center mr-5">
+            <div className="text-white h-full flex items-center mr-2">
+              <span 
+                className="material-icons select-none cursor-pointer"
+                onClick={goToSignIn}
+                >account_box</span>
+            </div>
 
         <div onClick={onIconClicked} className="flex cursor-pointer mr-2 h-full items-center" id="Q&A">
           <span className="material-icons text-white select-none">question_answer</span>
