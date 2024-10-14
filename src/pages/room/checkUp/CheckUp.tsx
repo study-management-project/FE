@@ -11,10 +11,8 @@ type CheckUpProps = {
 };
 
 const CheckUp = ({ onSubmit, isLogin, sock, setCheckUpTitle, checkUpTitle }: CheckUpProps) => {
-    // const [title, setTitle] = useState<string>("");
     const [showVoteButtons, setShowVoteButtons] = useState<boolean>(false);
-    // const [submittedTitle, setSubmittedTitle] = useState<string | null>(null);
-    const [formVisible, setFormVisible] = useState<boolean>(isLogin.current); // 폼 표시 여부 상태
+    const [formVisible, setFormVisible] = useState<boolean>(isLogin.current); // 폼 표시 여부 상태 -> 로그인 기준도 필요한데, none이면 안 보이게도 해야 됨
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const handleSubmit = (event?: React.FormEvent) => {
@@ -24,14 +22,12 @@ const CheckUp = ({ onSubmit, isLogin, sock, setCheckUpTitle, checkUpTitle }: Che
             return;
         }
         onSubmit(checkUpTitle); // Q&A 제목을 RoomPage로 전달
-        // setSubmittedTitle(checkUpTitle); // 제목 저장
-        // setCheckUpTitle();
         setFormVisible(false); // 폼 숨기기
         setShowVoteButtons(true); // 투표 버튼 표시
         sock.current.sendCheckUp(checkUpTitle);
         setTimeout(() => {
             sock.current.getCheckUpResult();
-        },1000)
+        }, 1000)
     };
 
     // Enter 키로 Q&A를 시작할 수 있도록 처리
@@ -50,7 +46,6 @@ const CheckUp = ({ onSubmit, isLogin, sock, setCheckUpTitle, checkUpTitle }: Che
     useEffect(() => {
         if (!isLogin.current) {
             setFormVisible(false);
-            //setSubmittedTitle(title);
             setCheckUpTitle(checkUpTitle);
             setShowVoteButtons(true);
         }
