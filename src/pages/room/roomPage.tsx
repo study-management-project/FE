@@ -114,10 +114,13 @@ const RoomPage = () => {
           setOpen(!open);
         } else {
           if (clickedTitle === "Q&A") {
+            console.log(checkUpTitle);
+            console.log((checkUpTitle === 'none'));
+
             // Q&A와 질문 채팅 UI 추가
             setDrawerChildren(
               <div className="flex flex-col h-full w-full px-4">
-                <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
+                {!(checkUpTitle === 'none') && <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />}
                 <QuestionChat
                   questions={questions}
                   sock={sock}
@@ -151,7 +154,7 @@ const RoomPage = () => {
     if (drawerTitle != "코드 스냅샷") {
       setDrawerChildren(
         <div className="flex flex-col h-full w-full px-4">
-          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
+          {!(checkUpTitle === 'none') && <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />}
           <QuestionChat
             questions={questions}
             sock={sock}
@@ -263,7 +266,7 @@ const RoomPage = () => {
     setRoomInfo(RoomInfo.fromJson(roomInfoResponse.data));
 
     // 이해도 조사 결과를 받았을 때 실행할 함수
-    const onCheckUpResult = (result:string) => {
+    const onCheckUpResult = (result: string) => {
       console.log(result);
     }
     // 소켓 연결
@@ -311,8 +314,8 @@ const RoomPage = () => {
   useEffect(() => {
     if (drawerTitle !== "코드 스냅샷") {
       setDrawerChildren(
-        <div>
-          <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />
+        <div className="flex flex-col h-full w-full px-4">
+          {!(checkUpTitle === 'none') && <CheckUp onSubmit={(title) => handleCheckUpSubmit(title)} isLogin={isLogin} sock={sock} setCheckUpTitle={setCheckUpTitle} checkUpTitle={checkUpTitle} />}
           <QuestionChat
             questions={questions}
             sock={sock}
